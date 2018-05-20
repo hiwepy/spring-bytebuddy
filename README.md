@@ -1,2 +1,2 @@
-# cxf-rt-bytebuddy
-通过byte-buddy生成基于cxf的jaxws、jaxrs实现
+# spring-bytebuddy
+基于byte-buddy生成Spring MVC 框架的Controller

@@ -2,6 +2,7 @@ package org.springframework.bytebuddy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -15,7 +16,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FixedValue;
-import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
 
 public class ControllerCtClassBuilder_Test {
@@ -67,6 +68,8 @@ public class ControllerCtClassBuilder_Test {
 	@Test
 	public void testInstance() throws Exception {
 
+		InvocationHandler invocationHandler = new EndpointApiInvocationHandler();
+		
 		Builder<Object> builder = new ByteBuddy().with(new NamingStrategy.SuffixingRandom("Api212sd"))
 				.subclass(Object.class)
 				.defineField("id", String.class, Modifier.PROTECTED).annotateField(new Autowired() {
@@ -98,20 +101,15 @@ public class ControllerCtClassBuilder_Test {
 		builder = EndpointApiUtils.annotController(builder, "api2018");
 		builder = EndpointApiUtils.annotApi(builder, "这是一个测试API");
 		
-		
-		builder = builder.method(ElementMatchers.named("apply"))
-		  .intercept(MethodDelegation.to(new GreetingInterceptor()));
-		  
 		  
 		builder = builder.method(ElementMatchers.named("toString"))
 		  .intercept(FixedValue.value("Hello World!"));
-		  
+		 
+		builder = builder.method(ElementMatchers.any())
+				.intercept(InvocationHandlerAdapter.of(invocationHandler));
+		
 		Class<?> clazz = builder.make().load(getClass().getClassLoader()).getLoaded();
 
-		
-		
-		clazz.newInstance().apply("Byte Buddy")
-		
 		
 		System.err.println("=========Type Annotations======================");
 		for (Annotation element : clazz.getAnnotations()) {

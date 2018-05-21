@@ -15,16 +15,12 @@
  */
 package org.springframework.bytebuddy.utils;
 
-import java.lang.annotation.Annotation;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bytebuddy.annotation.WebBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcMapping;
 import org.springframework.bytebuddy.bytecode.definition.MvcMethod;
-import org.springframework.bytebuddy.bytecode.definition.MvcParam;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -32,33 +28,25 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ValueConstants;
 
 import io.swagger.annotations.Authorization;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 
-public class EndpointApiUtils {
+public class EndpointApiUtils2 {
 
 	/**
 	 * 构造 @Api 注解
 	 */
-	public static Annotation annotApi(String... tags) {
-		return new io.swagger.annotations.Api() {
+	public static <T> Builder<T> annotApi(Builder<T> builder, String... tags) {
+		return builder.annotateType(new io.swagger.annotations.Api() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -115,16 +103,16 @@ public class EndpointApiUtils {
 				return false;
 			}
 			
-		};
+		});
 
 	} 
 	
 	/**
 	 * 构造 @ApiIgnore 注解
 	 */
-	public static Annotation annotApiIgnore(String desc) {
+	public static <T> Builder<T> annotApiIgnore(Builder<T> builder, String desc) {
 		
-		return new springfox.documentation.annotations.ApiIgnore() {
+		return builder.annotateType(new springfox.documentation.annotations.ApiIgnore() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -137,15 +125,15 @@ public class EndpointApiUtils {
 			}
 
  
-		};
+		});
 	}
 
 	/**
 	 * 构造 @Configuration 注解
 	 */
-	public static Annotation annotConfiguration(String name) {
+	public static <T> Builder<T> annotConfiguration(Builder<T> builder, String name) {
 		
-		return new Configuration() {
+		return builder.annotateType(new Configuration() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -157,37 +145,16 @@ public class EndpointApiUtils {
 				return name;
 			}
 			
-		};
+		});
 	}
-	
-	/**
-	 * 构造 @Autowired 注解
-	 */
-	public static Annotation annotAutowired(boolean required) {
-		
-		return new Autowired() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Autowired.class;
-			}
-
-			@Override
-			public boolean required() {
-				return required;
-			}
-			
-		};
-	}
-	
 	
 	/**
 	 * 构造 @Bean 注解
 	 */
-	public static Annotation annotBean(String[] name, Autowire autowire
+	public static <T> Builder<T> annotBean(Builder<T> builder, String[] name, Autowire autowire
 			,String initMethod,String destroyMethod) {
 		
-		return new Bean() {
+		return builder.annotateType(new Bean() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -220,16 +187,16 @@ public class EndpointApiUtils {
 			}
 
  
-		};
+		});
 		
 	}
 
 	/**
 	 * 构造 @Lazy 注解
 	 */
-	public static Annotation annotLazy(boolean lazy) {
+	public static <T> Builder<T> annotLazy(Builder<T> builder, boolean lazy) {
 		
-		return new Lazy() {
+		return builder.annotateType(new Lazy() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -242,16 +209,16 @@ public class EndpointApiUtils {
 				return lazy;
 			}
 			
-		};
+		});
 		
 	}
 
 	/**
 	 * 构造 @Scope 注解
 	 */
-	public static Annotation annotScope(String scopeName, ScopedProxyMode proxyMode) {
+	public static <T> Builder<T> annotScope(Builder<T> builder, String scopeName, ScopedProxyMode proxyMode) {
 		
-		return new Scope() {
+		return builder.annotateType(new Scope() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -273,15 +240,15 @@ public class EndpointApiUtils {
 				return scopeName;
 			}
 			
-		};
+		});
 		
 	}
 	
 	/**
 	 * 构造 @Controller 注解
 	 */
-	public static Annotation annotController(String name) {
-		return new Controller() {
+	public static <T> Builder<T> annotController(Builder<T> builder, String name) {
+		return builder.annotateType(new Controller() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -293,14 +260,14 @@ public class EndpointApiUtils {
 				return name;
 			}
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @RestController 注解
 	 */
-	public static Annotation annotRestController(String name) {
-		return new RestController() {
+	public static <T> Builder<T> annotRestController(Builder<T> builder, String name) {
+		return builder.annotateType(new RestController() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -312,59 +279,59 @@ public class EndpointApiUtils {
 				return name;
 			}
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @RequestMapping 注解
 	 */
-	public static Annotation annotRequestMapping(MvcMapping mapping) {
-		return annotHttpMethod(RequestMapping.class, mapping);
+	public static <T> Builder<T> annotRequestMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, RequestMapping.class, mapping);
 	}
 
 	/**
 	 * 构造 @GetMapping 注解
 	 */
-	public static Annotation annotGetMapping(MvcMapping mapping) {
-		return annotHttpMethod(GetMapping.class, mapping);
+	public static <T> Builder<T> annotGetMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, GetMapping.class, mapping);
 	}
 	
 	/**
 	 * 构造 @PostMapping 注解
 	 */
-	public static Annotation annotPostMapping(MvcMapping mapping) {
-		return annotHttpMethod(PostMapping.class, mapping);
+	public static <T> Builder<T> annotPostMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, PostMapping.class, mapping);
 	}
 	
 	/**
 	 * 构造 @PutMapping 注解
 	 */
-	public static Annotation annotPutMapping(MvcMapping mapping) {
-		return annotHttpMethod(PutMapping.class, mapping);
+	public static <T> Builder<T> annotPutMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, PutMapping.class, mapping);
 	}
 	
 	/**
 	 * 构造 @DeleteMapping 注解
 	 */
-	public static Annotation annotDeleteMapping(MvcMapping mapping) {
-		return annotHttpMethod(DeleteMapping.class, mapping);
+	public static <T> Builder<T> annotDeleteMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, DeleteMapping.class, mapping);
 	}
 	
 	/**
 	 * 构造 @PatchMapping 注解
 	 */
-	public static Annotation annotPatchMapping(MvcMapping mapping) {
-		return annotHttpMethod(PatchMapping.class, mapping);
+	public static <T> Builder<T> annotPatchMapping(Builder<T> builder, MvcMapping mapping) {
+		return annotHttpMethod(builder, PatchMapping.class, mapping);
 	}
 	
 	/**
 	 * 构造 @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping | 注解
 	 */
-	private static Annotation annotHttpMethod(
+	private static <T> Builder<T> annotHttpMethod(Builder<T> builder, 
 			Class<? extends java.lang.annotation.Annotation> annotation,
 			MvcMapping mapping) {
 		
-		return new RequestMapping() {
+		return builder.annotateType(new RequestMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -412,16 +379,16 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 		
 	}
 	
 	/**
 	 * 构造 @RequestMapping 注解
 	 */
-	public static Annotation annotRequestMapping(String name, String[] path,
+	public static <T> Builder<T> annotRequestMapping(Builder<T> builder, String name, String[] path,
 			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new RequestMapping() {
+		return builder.annotateType(new RequestMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -469,14 +436,15 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 	}
 
 	/**
 	 * 构造 @GetMapping 注解
 	 */
-	public static Annotation annotGetMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new GetMapping() {
+	public static <T> Builder<T> annotGetMapping(Builder<T> builder, String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		return builder.annotateType(new GetMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -519,14 +487,15 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @PostMapping 注解
 	 */
-	public static Annotation annotPostMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PostMapping() {
+	public static <T> Builder<T> annotPostMapping(Builder<T> builder, String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		return builder.annotateType(new PostMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -569,14 +538,15 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @PutMapping 注解
 	 */
-	public static Annotation annotPutMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PutMapping() {
+	public static <T> Builder<T> annotPutMapping(Builder<T> builder, String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		return builder.annotateType(new PutMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -619,14 +589,15 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @DeleteMapping 注解
 	 */
-	public static Annotation annotDeleteMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new DeleteMapping() {
+	public static <T> Builder<T> annotDeleteMapping(Builder<T> builder, String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		return builder.annotateType(new DeleteMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -669,14 +640,15 @@ public class EndpointApiUtils {
 			}
 
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @PatchMapping 注解
 	 */
-	public static Annotation annotPatchMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PatchMapping() {
+	public static <T> Builder<T> annotPatchMapping(Builder<T> builder, String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		return builder.annotateType(new PatchMapping() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -718,15 +690,15 @@ public class EndpointApiUtils {
 				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
 			}
 			
-		};
+		});
 	}
 	
 	/**
 	 * 构造 @WebBound 注解
 	 */
-	public static Annotation annotWebBound(MvcBound bound) {
+	public static <T> Builder<T> annotWebBound(Builder<T> builder, MvcBound bound) {
 
-		return new WebBound() {
+		return builder.annotateType(new WebBound() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -743,46 +715,46 @@ public class EndpointApiUtils {
 				return bound.getJson();
 			}
 			
-		};
+		});
 		
 	}
 	
 	/**
 	 * 根据参数 构造   @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
 	 */
-	public static Annotation annotMethodMapping(MvcMethod method) {
+	public static <T> Builder<T> annotMethodMapping(Builder<T> builder, MvcMethod method) {
 		
-		Annotation annot = null;
+		Builder<T> annot = null;
 		// 多种支持请求方法
 		if(method.getMethod().length > 1) {
-			annot = annotGetMapping(method.getName(), method.getPath(), 
+			annot = annotGetMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 					method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			return annot;
 		}
 		// 仅支持一种请求方式
 		switch (method.getMethod()[0]) {
 			case GET:{
-				annot = annotGetMapping(method.getName(), method.getPath(),  
+				annot = annotGetMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case POST:{
-				annot = annotPostMapping(method.getName(), method.getPath(), 
+				annot = annotPostMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case PUT:{
-				annot = annotPutMapping(method.getName(), method.getPath(), 
+				annot = annotPutMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case DELETE:{
-				annot = annotDeleteMapping(method.getName(), method.getPath(),
+				annot = annotDeleteMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case PATCH:{
-				annot = annotPatchMapping(method.getName(), method.getPath(), 
+				annot = annotPatchMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			default:{
-				annot = annotGetMapping(method.getName(), method.getPath(), 
+				annot = annotGetMapping(builder, method.getName(), method.getPath(), method.getMethod(), 
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 		}
@@ -791,303 +763,72 @@ public class EndpointApiUtils {
 	}
 	
 	
-
-	
-	
-	
-	/**
-	 * 构造 @CookieValue 注解
-	 */
-	public static <T> Annotation annotCookieValue(MvcParam<T> param) {
-		return new CookieValue() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return CookieValue.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-		};
-	}
-	
-	/**
-	 * 构造 @MatrixVariable 注解
-	 */
-	public static <T> Annotation annotMatrixVariable(MvcParam<T> param) {
-		return new MatrixVariable() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return MatrixVariable.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
-			@Override
-			public String pathVar() {
-				return ValueConstants.DEFAULT_NONE;
-			}
-		};
-	}
-	
-	/**
-	 * 构造 @PathVariable 注解
-	 */
-	public static <T> Annotation annotPathVariable(MvcParam<T> param) {
-		return new PathVariable() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return PathVariable.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-		};
-	}
-	
-	
-	/**
-	 * 构造 @RequestAttribute 注解
-	 */
-	public static <T> Annotation annotRequestAttribute(MvcParam<T> param) {
-		return new RequestAttribute() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestAttribute.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-		};
-	}
-	
-	/**
-	 * 构造 @RequestBody 注解
-	 */
-	public static <T> Annotation annotRequestBody(MvcParam<T> param) {
-		return new RequestBody() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestBody.class;
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-		};
-	}
-	
-	/**
-	 * 构造 @RequestHeader 注解
-	 */
-	public static <T> Annotation annotRequestHeader(MvcParam<T> param) {
-		return new RequestHeader() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestHeader.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
-		};
-	}
-	
-	/**
-	 * 构造 @RequestPart 注解
-	 */
-	public static <T> Annotation annotRequestPart(MvcParam<T> param) {
-		return new RequestPart() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestPart.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-		};
-	}
-	
-	/**
-	 * 构造 @RequestParam 注解
-	 */
-	public static <T> Annotation annotRequestParam(MvcParam<T> param) {
-		return new RequestParam() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestParam.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
-		};
-	}
-	
 	/**
 	 * 构造 @CookieValue | @MatrixVariable | @PathVariable | @RequestAttribute | @RequestBody | @RequestHeader
 	 *  | @RequestParam | @RequestPart 参数注解
-	 */
-	public static <T> Annotation[][] annotParams(MvcParam<?>... params) {
+	 
+	public static <T> Annotation[][] annotParams(Builder<T> builder, MvcParam<?>... params) {
 
 		// 添加参数注解
 		if (params != null && params.length > 0) {
 			
 			Annotation[][] paramArrays = new Annotation[params.length][1];
+			
 			Annotation paramAnnot = null;
+			boolean defAnnot = false;
 			for (int i = 0; i < params.length; i++) {
 				paramAnnot = null;
+				defAnnot = false;
 				switch (params[i].getFrom()) {
-					case COOKIE: {
-						paramAnnot = annotCookieValue(params[i]);
+					case COOKIE:{
+						paramAnnot = new Annotation(CookieValue.class.getName(), constPool);
+						defAnnot = StringUtils.hasText(params[i].getDef());
 					};break;
-					case MATRIX: {
-						paramAnnot = annotMatrixVariable(params[i]);
+					case MATRIX:{
+						paramAnnot = new Annotation(MatrixVariable.class.getName(), constPool);
+						defAnnot = StringUtils.hasText(params[i].getDef());
 					};break;
-					case PATH: {
-						paramAnnot = annotPathVariable(params[i]);
+					case PATH:{
+						paramAnnot = new Annotation(PathVariable.class.getName(), constPool);
 					};break;
-					case ATTR: {
-						paramAnnot = annotRequestAttribute(params[i]);
+					case ATTR:{
+						paramAnnot = new Annotation(RequestAttribute.class.getName(), constPool);
 					};break;
-					case BODY: {
-						paramAnnot = annotRequestBody(params[i]);
+					case BODY:{
+						paramAnnot = new Annotation(RequestBody.class.getName(), constPool);
 					};break;
-					case HEADER: {
-						paramAnnot = annotRequestHeader(params[i]);
+					case HEADER:{
+						paramAnnot = new Annotation(RequestHeader.class.getName(), constPool);
+						defAnnot = StringUtils.hasText(params[i].getDef());
 					};break;
-					case PARAM: {
-						paramAnnot = annotRequestParam(params[i]);
+					case PARAM:{
+						paramAnnot = new Annotation(RequestParam.class.getName(), constPool);
+						defAnnot = StringUtils.hasText(params[i].getDef());
 					};break;
-					case PART: {
-						paramAnnot = annotRequestPart(params[i]);
+					case PART:{
+						paramAnnot = new Annotation(RequestPart.class.getName(), constPool);
 					};break;
-					default: {
-						paramAnnot = annotRequestParam(params[i]);
+					default:{
+						paramAnnot = new Annotation(RequestParam.class.getName(), constPool);
+						defAnnot = StringUtils.hasText(params[i].getDef());
 					};break;
 				}
+				
+				if(MvcParamFrom.BODY.compareTo(params[i].getFrom()) != 0){
+					paramAnnot.addMemberValue("name", new StringMemberValue(params[i].getName(), constPool));
+					if(defAnnot) {
+						paramAnnot.addMemberValue("defaultValue", new StringMemberValue(params[i].getDef(), constPool));
+					}
+				}
+				
 				paramArrays[i][0] = paramAnnot;
+				
 			}
 			
 			return paramArrays;
 
 		}
 		return null;
-	}
+	}*/
 	
 }

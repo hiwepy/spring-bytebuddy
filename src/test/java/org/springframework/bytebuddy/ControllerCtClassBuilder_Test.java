@@ -2,35 +2,48 @@ package org.springframework.bytebuddy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.UUID;
-
-import javax.jws.WebParam;
+import java.lang.reflect.Modifier;
 
 import org.apache.commons.beanutils.ConstructorUtils;
 import org.junit.Test;
-import org.springframework.bytebuddy.bytecode.EndpointApiCtClassBuilder;
-import org.springframework.bytebuddy.bytecode.definition.MvcParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bytebuddy.utils.EndpointApiUtils;
+import org.springframework.stereotype.Controller;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.NamingStrategy;
+import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.implementation.FixedValue;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
+
 public class ControllerCtClassBuilder_Test {
 
-	//@Test
+	// @Test
 	public void testClass() throws Exception {
-		
-		Class<? extends Object> clazz = new EndpointApiCtClassBuilder("org.apache.cxf.spring.boot.FirstCase1")
-				.controller("")
-				.makeField("public int k = 3;")
-				.newField(String.class, "uid", UUID.randomUUID().toString())
-				.makeMethod("public void sayHello(String txt) { System.out.println(txt); }")
-				.build();
-		
+
+		Builder<Object> builder = new ByteBuddy().with(new NamingStrategy.SuffixingRandom("Api212sd"))
+				.subclass(Object.class).annotateType(new Controller() {
+
+					@Override
+					public Class<? extends Annotation> annotationType() {
+						return Controller.class;
+					}
+
+					@Override
+					public String value() {
+						return "";
+					}
+				});
+
+		Class<?> clazz = builder.make().load(getClass().getClassLoader()).getLoaded();
+
 		System.err.println("=========Type Annotations======================");
 		for (Annotation element : clazz.getAnnotations()) {
 			System.out.println(element.toString());
 		}
-		
+
 		System.err.println("=========Fields======================");
 		for (Field element : clazz.getDeclaredFields()) {
 			System.out.println(element.getName());
@@ -47,30 +60,64 @@ public class ControllerCtClassBuilder_Test {
 		}
 		System.err.println("=========sayHello======================");
 		Method sayHello = clazz.getMethod("sayHello", String.class);
-		sayHello.invoke(ConstructorUtils.invokeConstructor(clazz, null),  " hi Hello " );
-		
+		sayHello.invoke(ConstructorUtils.invokeConstructor(clazz, null), " hi Hello ");
+
 	}
-	
+
 	@Test
-	public void testInstance() throws Exception{
+	public void testInstance() throws Exception {
+
+		Builder<Object> builder = new ByteBuddy().with(new NamingStrategy.SuffixingRandom("Api212sd"))
+				.subclass(Object.class)
+				.defineField("id", String.class, Modifier.PROTECTED).annotateField(new Autowired() {
+					
+					@Override
+					public Class<? extends Annotation> annotationType() {
+						return Autowired.class;
+					}
+					
+					@Override
+					public boolean required() {
+						return false;
+					}
+				})
+				.defineProperty("uid", String.class)
+				.defineProperty("name", String.class, true);
 		
-		InvocationHandler handler = new EndpointApiInvocationHandler();
+		builder.defineMethod("sayHello", String.class, Modifier.PUBLIC)
+			.withParameter(String.class, "text")
+			.throwing(Exception.class);
 		
-		Object ctObject = new EndpointApiCtClassBuilder("org.apache.cxf.spring.boot.FirstCaseV2")
-				.controller("")
-				.makeField("public int k = 3;")
-				.newField(String.class, "uid", UUID.randomUUID().toString())
-				.newMethod(String.class, "sayHello", new MvcParam(String.class, "text"))
-				.newMethod(String.class, "sayHello2", new MvcParam(String.class, "text", WebParam.Mode.OUT))
-				.toInstance(handler);
+		builder.defineMethod("sayHello2", String.class, Modifier.PUBLIC)
+			.withParameter(String.class, "text")
+			.withParameter(String.class, "ht")
+			.throwing(Exception.class);
 		
-		Class clazz = ctObject.getClass();
+		builder.defineConstructor(Modifier.PROTECTED).withParameter(String.class);
+		
+		builder = EndpointApiUtils.annotController(builder, "api2018");
+		builder = EndpointApiUtils.annotApi(builder, "这是一个测试API");
+		
+		
+		builder = builder.method(ElementMatchers.named("apply"))
+		  .intercept(MethodDelegation.to(new GreetingInterceptor()));
+		  
+		  
+		builder = builder.method(ElementMatchers.named("toString"))
+		  .intercept(FixedValue.value("Hello World!"));
+		  
+		Class<?> clazz = builder.make().load(getClass().getClassLoader()).getLoaded();
+
+		
+		
+		clazz.newInstance().apply("Byte Buddy")
+		
 		
 		System.err.println("=========Type Annotations======================");
 		for (Annotation element : clazz.getAnnotations()) {
 			System.out.println(element.toString());
 		}
-		
+
 		System.err.println("=========Fields======================");
 		for (Field element : clazz.getDeclaredFields()) {
 			System.out.println(element.getName());
@@ -87,15 +134,22 @@ public class ControllerCtClassBuilder_Test {
 			}
 			System.err.println("=========Method Parameter Annotations======================");
 			for (Annotation[] anno : method.getParameterAnnotations()) {
-				System.out.println(anno[0].toString());
+				if(anno.length > 0) {
+					System.out.println(anno[0].toString());
+				}
 			}
 		}
-		System.err.println("=========sayHello======================");
+		
+		Object ctObject = clazz.newInstance();
+		
+		ctObject.toString();
+		
+		/*System.err.println("=========sayHello======================");
 		Method sayHello = clazz.getMethod("sayHello", String.class);
-		sayHello.invoke(ctObject,  " hi Hello " );
+		sayHello.invoke(ctObject, " hi Hello ");
 		System.err.println("=========sayHello2======================");
 		Method sayHello2 = clazz.getMethod("sayHello2", String.class);
-		sayHello2.invoke(ctObject,  " hi Hello2 " );
+		sayHello2.invoke(ctObject, " hi Hello2 ");*/
 	}
 
 }

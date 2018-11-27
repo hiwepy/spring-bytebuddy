@@ -9,6 +9,7 @@ import org.springframework.bytebuddy.bytecode.definition.MvcMapping;
 import org.springframework.bytebuddy.bytecode.definition.MvcMethod;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
 import org.springframework.bytebuddy.utils.EndpointApiUtils;
+import org.springframework.bytebuddy.utils.EndpointApiUtils2;
 import org.springframework.bytebuddy.utils.SwaggerApiUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -117,7 +118,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> controller() {
-		builder = builder.annotateType(EndpointApiUtils.annotController(""));
+		builder = builder.annotateType(EndpointApiUtils2.annotController(""));
 		return this;
 	}
 	

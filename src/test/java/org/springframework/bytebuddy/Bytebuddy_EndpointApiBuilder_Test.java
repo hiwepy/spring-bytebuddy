@@ -49,7 +49,7 @@ public class Bytebuddy_EndpointApiBuilder_Test {
 						new MvcBound("100212"), new MvcParam<String>(String.class, "word", MvcParamFrom.PATH))
 
 				// 添加 @Controller 注解
-				// .controller("api")
+				.restController()
 				.intercept(invocationHandler).build().defineField("xxx", String.class);
 
 		Class<?> clazz = builder.make().load(getClass().getClassLoader()).getLoaded();

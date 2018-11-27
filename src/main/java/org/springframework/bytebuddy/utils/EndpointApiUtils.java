@@ -16,10 +16,16 @@
 package org.springframework.bytebuddy.utils;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.harmony.lang.annotation.AnnotationMember;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.bytebuddy.annotation.WebBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcMapping;
@@ -50,269 +56,94 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ValueConstants;
 
-import io.swagger.annotations.Authorization;
-
 public class EndpointApiUtils {
-
-	/**
-	 * 构造 @Api 注解
-	 */
-	public static Annotation annotApi(String... tags) {
-		return new io.swagger.annotations.Api() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return io.swagger.annotations.Api.class;
-			}
-
-			@Override
-			public String value() {
-				return "";
-			}
-			
-			@Override
-			public String[] tags() {
-				return ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags;
-			}
-
-			@Override
-			public String description() {
-				return "";
-			}
-
-			@Override
-			public String basePath() {
-				return "";
-			}
-
-			@Override
-			public int position() {
-				return 0;
-			}
-
-			@Override
-			public String produces() {
-				return "";
-			}
-
-			@Override
-			public String consumes() {
-				return "";
-			}
-
-			@Override
-			public String protocols() {
-				return "";
-			}
-
-			@Override
-			public Authorization[] authorizations() {
-				return new Authorization[] {};
-			}
-
-			@Override
-			public boolean hidden() {
-				return false;
-			}
-			
-		};
-
-	} 
-	
-	/**
-	 * 构造 @ApiIgnore 注解
-	 */
-	public static Annotation annotApiIgnore(String desc) {
-		
-		return new springfox.documentation.annotations.ApiIgnore() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return springfox.documentation.annotations.ApiIgnore.class;
-			}
-
-			@Override
-			public String value() {
-				return desc;
-			}
-
- 
-		};
-	}
 
 	/**
 	 * 构造 @Configuration 注解
 	 */
 	public static Annotation annotConfiguration(String name) {
-		
-		return new Configuration() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Configuration.class;
-			}
-
-			@Override
-			public String value() {
-				return name;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(name) ? name : "")
 		};
+		return AnnotationUtils.create(Configuration.class, members);
+	}
+	
+	/**
+	 * 构造 @Qualifier 注解
+	 */
+	public static Annotation annotQualifier(String name) {
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(name) ? name : "")
+		};
+		return AnnotationUtils.create(Qualifier.class, members);
 	}
 	
 	/**
 	 * 构造 @Autowired 注解
 	 */
 	public static Annotation annotAutowired(boolean required) {
-		
-		return new Autowired() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Autowired.class;
-			}
-
-			@Override
-			public boolean required() {
-				return required;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", required)
 		};
+		return AnnotationUtils.create(Autowired.class, members);
 	}
-	
 	
 	/**
 	 * 构造 @Bean 注解
 	 */
-	public static Annotation annotBean(String[] name, Autowire autowire
-			,String initMethod,String destroyMethod) {
-		
-		return new Bean() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Bean.class;
-			}
-
-			@Override
-			public String[] value() {
-				return name;
-			}
-
-			@Override
-			public String[] name() {
-				return name;
-			}
-
-			@Override
-			public Autowire autowire() {
-				return autowire;
-			}
-
-			@Override
-			public String initMethod() {
-				return initMethod;
-			}
-
-			@Override
-			public String destroyMethod() {
-				return destroyMethod;
-			}
-
- 
+	public static Annotation annotBean(String[] name, Autowire autowire, String initMethod, String destroyMethod,
+			boolean autowireCandidate) {
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", ArrayUtils.isEmpty(name) ? new String[] {} : name),
+			new AnnotationMember("name", ArrayUtils.isEmpty(name) ? new String[] {} : name),
+			new AnnotationMember("autowire", autowire),
+			new AnnotationMember("initMethod", StringUtils.hasText(initMethod) ? initMethod : ""),
+			new AnnotationMember("destroyMethod", StringUtils.hasText(destroyMethod) ? destroyMethod : ""),
+			new AnnotationMember("autowireCandidate", autowireCandidate) 
 		};
-		
+		return AnnotationUtils.create(Bean.class, members);
 	}
 
 	/**
 	 * 构造 @Lazy 注解
 	 */
 	public static Annotation annotLazy(boolean lazy) {
-		
-		return new Lazy() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Lazy.class;
-			}
-
-
-			@Override
-			public boolean value() {
-				return lazy;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", lazy)
 		};
-		
+		return AnnotationUtils.create(Lazy.class, members);
 	}
 
 	/**
 	 * 构造 @Scope 注解
 	 */
 	public static Annotation annotScope(String scopeName, ScopedProxyMode proxyMode) {
-		
-		return new Scope() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Scope.class;
-			}
-
-			@Override
-			public String scopeName() {
-				return scopeName;
-			}
-
-			@Override
-			public ScopedProxyMode proxyMode() {
-				return proxyMode;
-			}
-
-			@Override
-			public String value() {
-				return scopeName;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", scopeName),
+			new AnnotationMember("scopeName", scopeName),
+			new AnnotationMember("proxyMode", proxyMode)
 		};
-		
+		return AnnotationUtils.create(Scope.class, members);
 	}
 	
 	/**
 	 * 构造 @Controller 注解
 	 */
 	public static Annotation annotController(String name) {
-		return new Controller() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return Controller.class;
-			}
-
-			@Override
-			public String value() {
-				return name;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", name)
 		};
+		return AnnotationUtils.create(Controller.class, members);
 	}
 	
 	/**
 	 * 构造 @RestController 注解
 	 */
 	public static Annotation annotRestController(String name) {
-		return new RestController() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return RestController.class;
-			}
-
-			@Override
-			public String value() {
-				return name;
-			}
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", name)
 		};
+		return AnnotationUtils.create(RestController.class, members);
 	}
 	
 	/**
@@ -363,57 +194,44 @@ public class EndpointApiUtils {
 	private static Annotation annotHttpMethod(
 			Class<? extends java.lang.annotation.Annotation> annotation,
 			MvcMapping mapping) {
-		
-		return new RequestMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return RequestMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(mapping.getName()) ? mapping.getName() : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(mapping.getPath()) ? mapping.getPath() : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(mapping.getPath()) ? mapping.getPath() : new String[] {};
-			}
-
-			@Override
-			public RequestMethod[] method() {
-				return ArrayUtils.isNotEmpty(mapping.getMethod()) ? mapping.getMethod() : new RequestMethod[] {};
-			}
-
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(mapping.getParams()) ? mapping.getParams() : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(mapping.getHeaders()) ? mapping.getHeaders() : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(mapping.getConsumes()) ? mapping.getConsumes() : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(mapping.getProduces()) ? mapping.getProduces() : new String[] {};
-			}
-
-			
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("name", StringUtils.hasText(mapping.getName()) ? mapping.getName() : ""),
+			new AnnotationMember("value", ArrayUtils.isNotEmpty(mapping.getPath()) ? mapping.getPath() : new String[] {}),
+			new AnnotationMember("path", ArrayUtils.isNotEmpty(mapping.getPath()) ? mapping.getPath() : new String[] {}),
+			new AnnotationMember("params", ArrayUtils.isNotEmpty(mapping.getParams()) ? mapping.getParams() : new String[] {}),
+			new AnnotationMember("headers", ArrayUtils.isNotEmpty(mapping.getHeaders()) ? mapping.getHeaders() : new String[] {}),
+			new AnnotationMember("consumes", ArrayUtils.isNotEmpty(mapping.getConsumes()) ? mapping.getConsumes() : new String[] {}),
+			new AnnotationMember("produces", ArrayUtils.isNotEmpty(mapping.getProduces()) ? mapping.getProduces() : new String[] {})
 		};
-		
+		if(ArrayUtils.isNotEmpty(mapping.getMethod())) {
+			List<AnnotationMember> memberList = Arrays.asList(members);
+			memberList.add(new AnnotationMember("method", mapping.getMethod()));
+			members = memberList.toArray(new AnnotationMember[memberList.size()]);
+		}
+		return AnnotationUtils.create(annotation, members);
+	}
+	
+	/**
+	 * 构造 @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping | 注解
+	 */
+	private static Annotation annotHttpMethod(
+			Class<? extends java.lang.annotation.Annotation> annotation,String name, String[] path,
+			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("name", StringUtils.hasText(name) ? name : ""),
+			new AnnotationMember("value", ArrayUtils.isNotEmpty(path) ? path : new String[] {}),
+			new AnnotationMember("path", ArrayUtils.isNotEmpty(path) ? path : new String[] {}),
+			new AnnotationMember("params", ArrayUtils.isNotEmpty(params) ? params : new String[] {}),
+			new AnnotationMember("headers", ArrayUtils.isNotEmpty(headers) ? headers : new String[] {}),
+			new AnnotationMember("consumes", ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {}),
+			new AnnotationMember("produces", ArrayUtils.isNotEmpty(produces) ? produces : new String[] {})
+		};
+		if(method != null) {
+			List<AnnotationMember> memberList = Arrays.asList(members);
+			memberList.add(new AnnotationMember("method", ArrayUtils.isNotEmpty(method) ? method : new RequestMethod[] {}));
+			members = memberList.toArray(new AnnotationMember[memberList.size()]);
+		}
+		return AnnotationUtils.create(annotation, members);
 	}
 	
 	/**
@@ -421,330 +239,53 @@ public class EndpointApiUtils {
 	 */
 	public static Annotation annotRequestMapping(String name, String[] path,
 			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new RequestMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return RequestMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public RequestMethod[] method() {
-				return ArrayUtils.isNotEmpty(method) ? method : new RequestMethod[] {};
-			}
-
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-
-			
-		};
+		return annotHttpMethod(RequestMapping.class, name, path, method, params, headers, consumes, produces);
 	}
 
 	/**
 	 * 构造 @GetMapping 注解
 	 */
 	public static Annotation annotGetMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new GetMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return GetMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-			
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-
-			
-		};
+		return annotHttpMethod(GetMapping.class, name, path, null, params, headers, consumes, produces);
 	}
 	
 	/**
 	 * 构造 @PostMapping 注解
 	 */
 	public static Annotation annotPostMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PostMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return PostMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-			
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-
-			
-		};
+		return annotHttpMethod(PostMapping.class, name, path, null, params, headers, consumes, produces);
 	}
 	
 	/**
 	 * 构造 @PutMapping 注解
 	 */
 	public static Annotation annotPutMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PutMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return PutMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-			
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-
-			
-		};
+		return annotHttpMethod(PutMapping.class, name, path, null, params, headers, consumes, produces);
 	}
 	
 	/**
 	 * 构造 @DeleteMapping 注解
 	 */
 	public static Annotation annotDeleteMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new DeleteMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return DeleteMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-			
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-
-			
-		};
+		return annotHttpMethod(DeleteMapping.class, name, path, null, params, headers, consumes, produces);
 	}
 	
 	/**
 	 * 构造 @PatchMapping 注解
 	 */
 	public static Annotation annotPatchMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
-		return new PatchMapping() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return PatchMapping.class;
-			}
-
-			@Override
-			public String name() {
-				return StringUtils.hasText(name) ? name : "";
-			}
-
-			@Override
-			public String[] value() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] path() {
-				return ArrayUtils.isNotEmpty(path) ? path : new String[] {};
-			}
-
-			@Override
-			public String[] params() {
-				return ArrayUtils.isNotEmpty(params) ? params : new String[] {};
-			}
-
-			@Override
-			public String[] headers() {
-				return ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
-			}
-
-			@Override
-			public String[] consumes() {
-				return ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-			}
-
-			@Override
-			public String[] produces() {
-				return ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
-			}
-			
-		};
+		return annotHttpMethod(PatchMapping.class, name, path, null, params, headers, consumes, produces);
 	}
 	
 	/**
 	 * 构造 @WebBound 注解
 	 */
-	public static Annotation annotWebBound(MvcBound bound) {
-
-		return new WebBound() {
-
-			@Override
-			public Class<? extends java.lang.annotation.Annotation> annotationType() {
-				return WebBound.class;
-			}
-
-			@Override
-			public String uid() {
-				return bound.getUid();
-			}
-
-			@Override
-			public String json() {
-				return bound.getJson();
-			}
-			
+	public static Annotation annotBound(MvcBound bound) {
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("uid", StringUtils.hasText(bound.getUid()) ? bound.getUid() : ""),
+			new AnnotationMember("json", StringUtils.hasText(bound.getJson()) ? bound.getJson() : "")
 		};
-		
+		return AnnotationUtils.create(WebBound.class, members);
 	}
 	
 	/**
@@ -790,109 +331,43 @@ public class EndpointApiUtils {
 		return annot;
 	}
 	
-	
-
-	
-	
-	
 	/**
 	 * 构造 @CookieValue 注解
 	 */
 	public static <T> Annotation annotCookieValue(MvcParam<T> param) {
-		return new CookieValue() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return CookieValue.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired()),
+			new AnnotationMember("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
 		};
+		return AnnotationUtils.create(CookieValue.class, members);
 	}
 	
 	/**
 	 * 构造 @MatrixVariable 注解
 	 */
 	public static <T> Annotation annotMatrixVariable(MvcParam<T> param) {
-		return new MatrixVariable() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return MatrixVariable.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
-			@Override
-			public String pathVar() {
-				return ValueConstants.DEFAULT_NONE;
-			}
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired()),
+			new AnnotationMember("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE),
+			new AnnotationMember("pathVar", ValueConstants.DEFAULT_NONE)
 		};
+		return AnnotationUtils.create(MatrixVariable.class, members);
 	}
 	
 	/**
 	 * 构造 @PathVariable 注解
 	 */
 	public static <T> Annotation annotPathVariable(MvcParam<T> param) {
-		return new PathVariable() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return PathVariable.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired())
 		};
+		return AnnotationUtils.create(PathVariable.class, members);
 	}
 	
 	
@@ -900,194 +375,105 @@ public class EndpointApiUtils {
 	 * 构造 @RequestAttribute 注解
 	 */
 	public static <T> Annotation annotRequestAttribute(MvcParam<T> param) {
-		return new RequestAttribute() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestAttribute.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired())
 		};
+		return AnnotationUtils.create(RequestAttribute.class, members);
 	}
 	
 	/**
 	 * 构造 @RequestBody 注解
 	 */
 	public static <T> Annotation annotRequestBody(MvcParam<T> param) {
-		return new RequestBody() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestBody.class;
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("required", param.isRequired())
 		};
+		return AnnotationUtils.create(RequestBody.class, members);
 	}
 	
 	/**
 	 * 构造 @RequestHeader 注解
 	 */
 	public static <T> Annotation annotRequestHeader(MvcParam<T> param) {
-		return new RequestHeader() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestHeader.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired()),
+			new AnnotationMember("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
 		};
+		return AnnotationUtils.create(RequestHeader.class, members);
 	}
 	
 	/**
 	 * 构造 @RequestPart 注解
 	 */
 	public static <T> Annotation annotRequestPart(MvcParam<T> param) {
-		return new RequestPart() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestPart.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired())
 		};
+		return AnnotationUtils.create(RequestPart.class, members);
 	}
 	
 	/**
 	 * 构造 @RequestParam 注解
 	 */
 	public static <T> Annotation annotRequestParam(MvcParam<T> param) {
-		return new RequestParam() {
-			
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return RequestParam.class;
-			}
-
-			@Override
-			public String value() {
-				return param.getName();
-			}
-
-			@Override
-			public boolean required() {
-				return param.isRequired();
-			}
-
-			@Override
-			public String name() {
-				return param.getName();
-			}
-
-			@Override
-			public String defaultValue() {
-				return StringUtils.hasText(param.getDef()) ? param.getDef() : "";
-			}
-
+		AnnotationMember[] members = new AnnotationMember[] {
+			new AnnotationMember("value", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("name", StringUtils.hasText(param.getName()) ? param.getName() : ""),
+			new AnnotationMember("required", param.isRequired()),
+			new AnnotationMember("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
 		};
+		return AnnotationUtils.create(RequestParam.class, members);
 	}
 	
 	/**
 	 * 构造 @CookieValue | @MatrixVariable | @PathVariable | @RequestAttribute | @RequestBody | @RequestHeader
 	 *  | @RequestParam | @RequestPart 参数注解
 	 */
-	public static <T> Annotation[][] annotParams(MvcParam<?>... params) {
-
-		// 添加参数注解
-		if (params != null && params.length > 0) {
-			
-			Annotation[][] paramArrays = new Annotation[params.length][1];
-			Annotation paramAnnot = null;
-			for (int i = 0; i < params.length; i++) {
-				paramAnnot = null;
-				switch (params[i].getFrom()) {
-					case COOKIE: {
-						paramAnnot = annotCookieValue(params[i]);
-					};break;
-					case MATRIX: {
-						paramAnnot = annotMatrixVariable(params[i]);
-					};break;
-					case PATH: {
-						paramAnnot = annotPathVariable(params[i]);
-					};break;
-					case ATTR: {
-						paramAnnot = annotRequestAttribute(params[i]);
-					};break;
-					case BODY: {
-						paramAnnot = annotRequestBody(params[i]);
-					};break;
-					case HEADER: {
-						paramAnnot = annotRequestHeader(params[i]);
-					};break;
-					case PARAM: {
-						paramAnnot = annotRequestParam(params[i]);
-					};break;
-					case PART: {
-						paramAnnot = annotRequestPart(params[i]);
-					};break;
-					default: {
-						paramAnnot = annotRequestParam(params[i]);
-					};break;
-				}
-				paramArrays[i][0] = paramAnnot;
-			}
-			
-			return paramArrays;
-
+	public static <T> Annotation annotParam(MvcParam<T> param) {
+		Annotation paramAnnot = null;
+		switch (param.getFrom()) {
+			case COOKIE: {
+				paramAnnot = annotCookieValue(param);
+			};break;
+			case MATRIX: {
+				paramAnnot = annotMatrixVariable(param);
+			};break;
+			case PATH: {
+				paramAnnot = annotPathVariable(param);
+			};break;
+			case ATTR: {
+				paramAnnot = annotRequestAttribute(param);
+			};break;
+			case BODY: {
+				paramAnnot = annotRequestBody(param);
+			};break;
+			case HEADER: {
+				paramAnnot = annotRequestHeader(param);
+			};break;
+			case PARAM: {
+				paramAnnot = annotRequestParam(param);
+			};break;
+			case PART: {
+				paramAnnot = annotRequestPart(param);
+			};break;
+			default: {
+				paramAnnot = annotRequestParam(param);
+			};break;
 		}
-		return null;
+		return paramAnnot;
+	}
+	
+	/**
+	 * 构造 @Valid 注解
+	 */
+	public static <T> Annotation annotValid(MvcParam<T> param) {
+		return AnnotationUtils.create(Valid.class, null);
 	}
 	
 }

@@ -13,20 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.bytebuddy;
+package org.springframework.bytebuddy.intercept;
 
-import java.lang.reflect.Method;
 
-import net.bytebuddy.asm.Advice.AllArguments;
-import net.bytebuddy.asm.Advice.Origin;
-import net.bytebuddy.asm.Advice.Return;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public class GeneralInterceptor {
-	
-	@RuntimeType
-	public Object intercept(@Return Object rt,@AllArguments Object[] allArguments, @Origin Method method) {
-		return null;
-	}
-	
+@Retention(RUNTIME)
+public @interface Scope {
+   String value();
 }

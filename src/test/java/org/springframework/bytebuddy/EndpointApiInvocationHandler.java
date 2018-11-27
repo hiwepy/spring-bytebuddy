@@ -11,7 +11,7 @@ public class EndpointApiInvocationHandler implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		
-		System.err.println("=========Method Invoke ======================");
+		System.out.println("=========Method Invoke:" + method.getName() + " ======================");
 		
 		// 获取方法上绑定的数据注解
 		WebBound bound = method.getAnnotation(WebBound.class);
@@ -20,12 +20,15 @@ public class EndpointApiInvocationHandler implements InvocationHandler {
 			bound = declaringClass.getAnnotation(WebBound.class);
 		}
 		  
-		System.out.println(method.getName());
+		System.out.println("=========Method Annotations======================");
 		for (Annotation anno : method.getAnnotations()) {
 			System.out.println(anno.toString());
 		}
+		System.out.println("=========Method Parameter Annotations======================");
 		for (Annotation[] anno : method.getParameterAnnotations()) {
-			System.out.println(anno[0].toString());
+			if(anno != null && anno.length > 0) {
+				System.out.println(anno[0].toString());
+			}
 		}
 		
 		for (Object arg : args) {

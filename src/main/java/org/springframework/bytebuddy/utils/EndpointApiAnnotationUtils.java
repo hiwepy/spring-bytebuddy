@@ -31,10 +31,10 @@ import org.springframework.bytebuddy.bytecode.definition.MvcBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcMapping;
 import org.springframework.bytebuddy.bytecode.definition.MvcMethod;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
+import org.springframework.bytebuddy.intercept.Scope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -56,7 +56,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.ValueConstants;
 
-public class EndpointApiUtils {
+public class EndpointApiAnnotationUtils {
+
 
 	/**
 	 * 构造 @Configuration 注解

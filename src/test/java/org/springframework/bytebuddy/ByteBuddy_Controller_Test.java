@@ -9,8 +9,8 @@ import java.lang.reflect.Modifier;
 import org.junit.Test;
 import org.springframework.bytebuddy.bytecode.EndpointApi;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
-import org.springframework.bytebuddy.utils.EndpointApiUtils;
-import org.springframework.bytebuddy.utils.SwaggerApiUtils;
+import org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils;
+import org.springframework.bytebuddy.utils.SwaggerApiAnnotationUtils;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
@@ -33,7 +33,7 @@ public class ByteBuddy_Controller_Test {
 				// 继承父类
 				.subclass(EndpointApi.class)
 				// 添加 @Controller 注解
-				.annotateType(EndpointApiUtils.annotController("api"))
+				.annotateType(EndpointApiAnnotationUtils.annotController("api"))
 				// 定义普通方法
 				.defineMethod("sayHello", String.class, Modifier.PUBLIC)
 				.intercept(FixedValue.value("Hello World ByteBuddy!"))
@@ -77,10 +77,10 @@ public class ByteBuddy_Controller_Test {
 				// 继承父类
 				.subclass(EndpointApi.class)
 				// 添加 @Controller, @Api 注解
-				.annotateType(EndpointApiUtils.annotController("api2018"), SwaggerApiUtils.annotApi( "这是一个测试API"))
+				.annotateType(EndpointApiAnnotationUtils.annotController("api2018"), SwaggerApiAnnotationUtils.annotApi( "这是一个测试API"))
 				// 定义依赖注入的字段
 				.defineField("handler", InvocationHandler.class, Modifier.PROTECTED)
-				.annotateField(EndpointApiUtils.annotAutowired(true), EndpointApiUtils.annotQualifier(""))
+				.annotateField(EndpointApiAnnotationUtils.annotAutowired(true), EndpointApiAnnotationUtils.annotQualifier(""))
 				// 定义普通属性字段
 				.defineProperty("uid", String.class)
 				.defineProperty("name", String.class, true)
@@ -90,11 +90,11 @@ public class ByteBuddy_Controller_Test {
 				// 定义注解方法：方法注解 + 参数注解
 				.defineMethod("sayHello2", String.class, Modifier.PUBLIC)
 				.withParameter(String.class, "ht")
-				.annotateParameter(EndpointApiUtils.annotPathVariable(new MvcParam<>(String.class, "text")))
+				.annotateParameter(EndpointApiAnnotationUtils.annotPathVariable(new MvcParam<>(String.class, "text")))
 				.withParameter(String.class, "text")
-				.annotateParameter(EndpointApiUtils.annotPathVariable(new MvcParam<>(String.class, "text")))
+				.annotateParameter(EndpointApiAnnotationUtils.annotPathVariable(new MvcParam<>(String.class, "text")))
 				.intercept(MethodDelegation.to(EndpointApi.class))
-				.annotateMethod(EndpointApiUtils.annotPostMapping("xx", new String[] {"say/{text}"}, null, null, null, null))
+				.annotateMethod(EndpointApiAnnotationUtils.annotPostMapping("xx", new String[] {"say/{text}"}, null, null, null, null))
 				// 查找方法，添加拦截器
 				.method(ElementMatchers.isToString()).intercept(SuperMethodCall.INSTANCE)
 				.method(ElementMatchers.any()).intercept(InvocationHandlerAdapter.of(invocationHandler))

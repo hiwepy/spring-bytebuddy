@@ -1,6 +1,5 @@
 package org.springframework.bytebuddy.bytecode;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 
@@ -8,9 +7,8 @@ import org.springframework.bytebuddy.bytecode.definition.MvcBound;
 import org.springframework.bytebuddy.bytecode.definition.MvcMapping;
 import org.springframework.bytebuddy.bytecode.definition.MvcMethod;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
-import org.springframework.bytebuddy.utils.EndpointApiUtils;
-import org.springframework.bytebuddy.utils.EndpointApiUtils2;
-import org.springframework.bytebuddy.utils.SwaggerApiUtils;
+import org.springframework.bytebuddy.utils.EndpointApiAnnotationDescriptionUtils;
+import org.springframework.bytebuddy.utils.SwaggerApiAnnotationUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ParameterDefinition.Annotatable;
@@ -97,7 +96,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link EndpointApiBuilder} instance 
 	 */
 	public EndpointApiBuilder<T> api(String name, String... tags) {
-		builder = builder.annotateType(SwaggerApiUtils.annotApi(name,tags));
+		builder = builder.annotateType(SwaggerApiAnnotationUtils.annotApi(name,tags));
 		return this;
 	}
 
@@ -108,7 +107,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> apiIgnore(String desc) {
-		builder = builder.annotateType(SwaggerApiUtils.annotApiIgnore(desc));
+		builder = builder.annotateType(SwaggerApiAnnotationUtils.annotApiIgnore(desc));
 		return this;
 	}
 	
@@ -118,7 +117,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> controller() {
-		builder = builder.annotateType(EndpointApiUtils2.annotController(""));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotController(""));
 		return this;
 	}
 	
@@ -129,7 +128,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> controller(String name) {
-		builder = builder.annotateType(EndpointApiUtils.annotController(name));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotController(name));
 		return this;
 	}
 	
@@ -139,7 +138,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> restController() {
-		builder = builder.annotateType(EndpointApiUtils.annotRestController(""));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotRestController(""));
 		return this;
 	}
 	
@@ -150,7 +149,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> restController(String name) {
-		builder = builder.annotateType(EndpointApiUtils.annotRestController(name));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotRestController(name));
 		return this;
 	}
 	
@@ -161,7 +160,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> requestMapping(MvcMapping mapping) {
-		builder = builder.annotateType(EndpointApiUtils.annotRequestMapping(mapping));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotRequestMapping(mapping));
 		return this;
 	}
 
@@ -172,7 +171,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> requestMapping(String path) {
-		builder = builder.annotateType(EndpointApiUtils.annotRequestMapping(null, new String[] { path }, null,
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotRequestMapping(null, new String[] { path }, null,
 				null, null, null, null));
 		return this;
 	}
@@ -191,7 +190,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 */
 	public EndpointApiBuilder<T> requestMapping(String name, String[] path, RequestMethod[] method,
 			String[] params, String[] headers, String[] consumes, String[] produces) {
-		builder = builder.annotateType(EndpointApiUtils.annotRequestMapping(name, path, method,
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotRequestMapping(name, path, method,
 				params, headers, consumes, produces));
 		return this;
 	}
@@ -206,7 +205,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 */
 	public EndpointApiBuilder<T> autowired(String name, Class<?> type, boolean required) {
 		// 定义依赖注入的字段
-		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiUtils.annotAutowired(required));
+		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationDescriptionUtils.annotAutowired(required));
 		return this;
 	}
 	
@@ -221,8 +220,8 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 */
 	public EndpointApiBuilder<T> autowired( String name, Class<?> type, boolean required, String qualifier) {
 		// 定义依赖注入的字段
-		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiUtils.annotAutowired(required),
-				EndpointApiUtils.annotQualifier(qualifier));
+		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationDescriptionUtils.annotAutowired(required),
+				EndpointApiAnnotationDescriptionUtils.annotQualifier(qualifier));
 		return this;
 	}
 	
@@ -236,7 +235,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	public EndpointApiBuilder<T> autowiredHandler(boolean required, String qualifier) {
 		// 查找依赖注入的字段
 		builder = builder.field(ElementMatchers.fieldType(InvocationHandler.class))
-				.annotateField(EndpointApiUtils.annotAutowired(required), EndpointApiUtils.annotQualifier(qualifier));
+				.annotateField(EndpointApiAnnotationDescriptionUtils.annotAutowired(required), EndpointApiAnnotationDescriptionUtils.annotQualifier(qualifier));
 		return this;
 	}
 	
@@ -259,7 +258,7 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> bind(final MvcBound bound) {
-		builder = builder.annotateType(EndpointApiUtils.annotBound(bound));
+		builder = builder.annotateType(EndpointApiAnnotationDescriptionUtils.annotBound(bound));
 		return this;
 	}
  
@@ -276,21 +275,20 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	public EndpointApiBuilder<T> newMethod(String name, String path, RequestMethod method, String consumes,
 			MvcBound bound, MvcParam<?>... params) {
         // 为方法添加  @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
-		Annotation mapping =  EndpointApiUtils.annotMethodMapping(new MvcMethod(name, StringUtils.tokenizeToStringArray(path, ","),
+		AnnotationDescription mapping =  EndpointApiAnnotationDescriptionUtils.annotMethodMapping(new MvcMethod(name, StringUtils.tokenizeToStringArray(path, ","),
         		true, null, StringUtils.tokenizeToStringArray(consumes, ","), method));
 		// 定义注解方法: 方法注解 + 参数注解
 		Initial<? extends EndpointApi> initial = builder.defineMethod(name, Object.class, Modifier.PUBLIC);
 		Annotatable<? extends EndpointApi> annotatable = null;
 		for (int i = 0; i < params.length; i++) {
 			annotatable = initial.withParameter(params[i].getType(), params[i].getName())
-					.annotateParameter(EndpointApiUtils.annotParam(params[i]));
+					.annotateParameter(EndpointApiAnnotationDescriptionUtils.annotParam(params[i]));
 		}
 		builder = annotatable.throwing(Throwable.class).intercept(StubMethod.INSTANCE)
-			.annotateMethod(mapping, EndpointApiUtils.annotBound(bound));
+			.annotateMethod(mapping, EndpointApiAnnotationDescriptionUtils.annotBound(bound));
 		return this;
 	}
 		
-	
 	/**
 	 * 根据参数构造一个新的方法
 	 * @param rtClass : 返回对象类型
@@ -303,16 +301,16 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	public EndpointApiBuilder<T> newMethod(final Class<?> rtClass, final MvcMethod method, final MvcBound bound, MvcParam<?>... params) {
 
 		// 为方法添加  @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
-		Annotation mapping =  EndpointApiUtils.annotMethodMapping(method);
+		AnnotationDescription mapping =  EndpointApiAnnotationDescriptionUtils.annotMethodMapping(method);
 		// 定义注解方法: 方法注解 + 参数注解
 		Initial<? extends EndpointApi> initial = builder.defineMethod(method.getName(), rtClass != null ? rtClass : Void.class, Modifier.PUBLIC);
 		Annotatable<? extends EndpointApi> annotatable = null;
 		for (int i = 0; i < params.length; i++) {
 			annotatable = initial.withParameter(params[i].getType(), params[i].getName())
-					.annotateParameter(EndpointApiUtils.annotParam(params[i]));
+					.annotateParameter(EndpointApiAnnotationDescriptionUtils.annotParam(params[i]));
 		}
 		builder = annotatable.throwing(Throwable.class).intercept(StubMethod.INSTANCE)
-			.annotateMethod(mapping, EndpointApiUtils.annotBound(bound));
+			.annotateMethod(mapping, EndpointApiAnnotationDescriptionUtils.annotBound(bound));
 		return this;
 	}
 	

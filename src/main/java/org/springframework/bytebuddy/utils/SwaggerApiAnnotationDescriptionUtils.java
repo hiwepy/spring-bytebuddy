@@ -15,16 +15,14 @@
  */
 package org.springframework.bytebuddy.utils;
 
-import java.lang.annotation.Annotation;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.harmony.lang.annotation.AnnotationMember;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.Api;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import springfox.documentation.annotations.ApiIgnore;
 
-public class SwaggerApiUtils {
+public class SwaggerApiAnnotationDescriptionUtils {
 
 	/**
 	 * 构造 @Api 注解
@@ -37,16 +35,15 @@ public class SwaggerApiUtils {
 	 * @see {@link @Api}
 	 * @return
 	 */
-	public static Annotation annotApi(String name, String[] tags, String produces,
+	public static AnnotationDescription annotApi(String name, String[] tags, String produces,
 			String consumes, String protocols, String[] authorizations) {
-		AnnotationMember[] members = new AnnotationMember[] {
-			new AnnotationMember("value", StringUtils.hasText(name) ? name : ""),
-			new AnnotationMember("tags", ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags),
-			new AnnotationMember("produces", StringUtils.hasText(produces) ? produces : "" ),
-			new AnnotationMember("consumes", StringUtils.hasText(consumes) ? consumes : ""),
-			new AnnotationMember("protocols", StringUtils.hasText(protocols) ? protocols : "")
-		};
-		return AnnotationUtils.create(Api.class, members);
+		return AnnotationDescription.Builder.ofType(Api.class)
+				.define("value", StringUtils.hasText(name) ? name : "")
+				.defineArray("tags", ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags)
+				.define("produces", StringUtils.hasText(produces) ? produces : "")
+				.define("consumes", StringUtils.hasText(consumes) ? consumes : "")
+				.define("protocols", StringUtils.hasText(protocols) ? protocols : "")
+				.build();
 	}
 	
 	/**
@@ -55,22 +52,20 @@ public class SwaggerApiUtils {
 	 * @param tags : A list of tags for API documentation control.
 	 * @return
 	 */
-	public static Annotation annotApi(String name, String... tags) {
-		AnnotationMember[] members = new AnnotationMember[] {
-			new AnnotationMember("value", StringUtils.hasText(name) ? name : ""),
-			new AnnotationMember("tags", ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags)
-		};
-		return AnnotationUtils.create(Api.class, members);
+	public static AnnotationDescription annotApi(String name, String... tags) {
+		return AnnotationDescription.Builder.ofType(Api.class)
+				.define("value", StringUtils.hasText(name) ? name : "")
+				.defineArray("tags", ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags)
+				.build();
 	} 
 	
 	/**
 	 * 构造 @ApiIgnore 注解
 	 */
-	public static Annotation annotApiIgnore(String desc) {
-		AnnotationMember[] members = new AnnotationMember[] {
-			new AnnotationMember("value", StringUtils.hasText(desc) ? desc : "")
-		};
-		return AnnotationUtils.create(ApiIgnore.class, members);
+	public static AnnotationDescription annotApiIgnore(String desc) {
+		return AnnotationDescription.Builder.ofType(ApiIgnore.class)
+				.define("value", StringUtils.hasText(desc) ? desc : "")
+				.build();
 	}
 	
 }

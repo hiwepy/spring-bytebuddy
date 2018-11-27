@@ -32,7 +32,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 
 /**
- * https://unmi.cc/leverage-bytebuddy-generate-generic-subclass/#more-7792
+ * https://yanbin.blog/leverage-bytebuddy-generate-generic-subclass/#more-7792
  */
 public class ByteBuddy_GenericSubclass_Test {
 

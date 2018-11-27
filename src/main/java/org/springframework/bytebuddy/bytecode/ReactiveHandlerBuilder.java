@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 
 import org.omg.CORBA.ServerRequest;
 import org.springframework.bytebuddy.bytecode.definition.MvcBound;
-import org.springframework.bytebuddy.utils.EndpointApiUtils;
+import org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
@@ -82,7 +82,7 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 */
 	public ReactiveHandlerBuilder<T> autowired(String name, Class<?> type, boolean required) {
 		// 定义依赖注入的字段
-		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiUtils.annotAutowired(required));
+		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required));
 		return this;
 	}
 	
@@ -97,8 +97,8 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 */
 	public ReactiveHandlerBuilder<T> autowired( String name, Class<T> type, boolean required, String qualifier) {
 		// 定义依赖注入的字段
-		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiUtils.annotAutowired(required),
-				EndpointApiUtils.annotQualifier(qualifier));
+		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required),
+				EndpointApiAnnotationUtils.annotQualifier(qualifier));
 		return this;
 	}
 	
@@ -112,7 +112,7 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	public ReactiveHandlerBuilder<T> autowiredHandler(boolean required, String qualifier) {
 		// 查找依赖注入的字段
 		builder = builder.field(ElementMatchers.fieldType(InvocationHandler.class))
-				.annotateField(EndpointApiUtils.annotAutowired(required), EndpointApiUtils.annotQualifier(qualifier));
+				.annotateField(EndpointApiAnnotationUtils.annotAutowired(required), EndpointApiAnnotationUtils.annotQualifier(qualifier));
 		return this;
 	}
 	
@@ -135,7 +135,7 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> bind(final MvcBound bound) {
-		builder = builder.annotateType(EndpointApiUtils.annotBound(bound));
+		builder = builder.annotateType(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
 	
@@ -152,7 +152,7 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 				.withParameter(ServerRequest.class, "request")
 				.throwing(Throwable.class)
 				.intercept(StubMethod.INSTANCE)
-				.annotateMethod(EndpointApiUtils.annotBound(bound));
+				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
 	
@@ -169,7 +169,7 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 				.withParameter(ServerRequest.class, "request")
 				.throwing(Throwable.class)
 				.intercept(StubMethod.INSTANCE)
-				.annotateMethod(EndpointApiUtils.annotBound(bound));
+				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
 	

@@ -7,29 +7,24 @@ import java.lang.reflect.Method;
 import org.springframework.bytebuddy.annotation.WebBound;
 import org.springframework.stereotype.Controller;
 
-import net.bytebuddy.description.annotation.AnnotationDescription;
-import net.bytebuddy.implementation.bind.annotation.Origin;
-
 public class EndpointApiInvocationHandler implements InvocationHandler {
 
 	@Override
-	public Object invoke(@Origin Object proxy, @Origin Method method, Object[] args) throws Throwable {
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		
 		System.out.println("=========Method Invoke:" + method.getName() + " ======================");
 		
-		
+		System.out.println("Declaring Class: " + method.getDeclaringClass());
 		Controller controller = proxy.getClass().getAnnotation(Controller.class);
-		System.out.println(controller);
+		System.out.println("Controller: " +controller);
 		
 		// 获取方法上绑定的数据注解
 		WebBound bound = method.getAnnotation(WebBound.class);
-		System.out.println(method.getDeclaringClass());
 		if(bound == null) {
 			Class<?> declaringClass = method.getDeclaringClass();
 			bound = declaringClass.getAnnotation(WebBound.class);
 		}
-		
-		
+		System.out.println("WebBound: " + bound);
 		
 		System.out.println("=========Method Annotations======================");
 		for (Annotation anno : method.getAnnotations()) {

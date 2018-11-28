@@ -57,8 +57,7 @@ public class ByteBuddy_GenericSubclass_Test {
 		unloadedType.saveIn(new File("target/classes"));
 
 		// 可以这样生成字节码得到 Class 实例来加载使用
-		// Class<?> subClass = unloadedType.load(Main.class.getClassLoader(),
-		// ClassLoadingStrategy.Default.WRAPPER).getLoaded();
+		// Class<?> subClass = unloadedType.load(Main.class.getClassLoader(), ClassLoadingStrategy.Default.WRAPPER).getLoaded();
 
 		Class<Repository<String>> repositoryClass = (Class<Repository<String>>) Class.forName("org.springframework.bytebuddy.intercept.UserRepository");
 		System.out.println(repositoryClass.getAnnotation(Scope.class).value()); // 输出 Session

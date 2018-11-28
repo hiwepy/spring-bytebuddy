@@ -3,9 +3,9 @@ package org.springframework.bytebuddy.bytecode;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 
-import org.omg.CORBA.ServerRequest;
 import org.springframework.bytebuddy.bytecode.definition.MvcBound;
 import org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
@@ -186,9 +186,9 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 		return this;
 	}
 
-	
-	public Builder<? extends EndpointApi> then() {
-		return builder;
+	@SuppressWarnings("unchecked")
+	public Builder<T> then() {
+		return (Builder<T>) builder;
 	}
 
 }

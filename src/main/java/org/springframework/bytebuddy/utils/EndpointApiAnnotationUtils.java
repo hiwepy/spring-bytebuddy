@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ValueConstants;
 
 import net.bytebuddy.description.annotation.AnnotationDescription;
 
@@ -78,7 +77,7 @@ public class EndpointApiAnnotationUtils {
 	 */
 	public static AnnotationDescription annotAutowired(boolean required) {
 		return AnnotationDescription.Builder.ofType(Autowired.class)
-				.define("value", required)
+				.define("required", required)
 				.build();
 	}
 	
@@ -325,7 +324,7 @@ public class EndpointApiAnnotationUtils {
 				.define("value", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("name", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("required", param.isRequired())
-				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
+				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
 	
@@ -337,8 +336,8 @@ public class EndpointApiAnnotationUtils {
 				.define("value", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("name", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("required", param.isRequired())
-				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
-				.define("pathVar", ValueConstants.DEFAULT_NONE)
+				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
+				.define("pathVar", "")
 				.build();
 	}
 	
@@ -381,7 +380,7 @@ public class EndpointApiAnnotationUtils {
 				.define("value", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("name", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("required", param.isRequired())
-				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
+				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
 	
@@ -404,7 +403,7 @@ public class EndpointApiAnnotationUtils {
 				.define("value", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("name", StringUtils.hasText(param.getName()) ? param.getName() : "")
 				.define("required", param.isRequired())
-				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : ValueConstants.DEFAULT_NONE)
+				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
 	

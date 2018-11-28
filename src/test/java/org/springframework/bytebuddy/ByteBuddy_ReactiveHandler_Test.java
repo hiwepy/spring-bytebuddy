@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2018, vindell (https://github.com/vindell).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package org.springframework.bytebuddy;
 
 import java.io.File;
@@ -25,14 +10,13 @@ import java.lang.reflect.Modifier;
 import org.junit.Test;
 import org.springframework.bytebuddy.bytecode.EndpointApi;
 import org.springframework.bytebuddy.bytecode.EndpointApiBuilder;
+import org.springframework.bytebuddy.bytecode.ReactiveHandlerBuilder;
 import org.springframework.bytebuddy.bytecode.definition.MvcBound;
-import org.springframework.bytebuddy.bytecode.definition.MvcMethod;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
-import org.springframework.bytebuddy.bytecode.definition.MvcParamFrom;
 import org.springframework.bytebuddy.intercept.EndpointApiInvocationHandler;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.DynamicType.Builder;
@@ -40,22 +24,22 @@ import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.attribute.MethodAttributeAppender;
 import net.bytebuddy.matcher.ElementMatchers;
 
-public class Bytebuddy_EndpointApiBuilder_Test {
+/**
+ * http://bytebuddy.net/#/tutorial
+ * http://xiangshouxiyang.iteye.com/blog/2377664
+ * @author <a href="https://github.com/vindell">vindell</a>
+ */
+public class ByteBuddy_ReactiveHandler_Test {
 
+	
 	@Test
 	public void testProxy() throws Exception {
 
 		InvocationHandler invocationHandler = new EndpointApiInvocationHandler();
 
-		Builder<EndpointApi> builder = new EndpointApiBuilder<EndpointApi>()
-				.newMethod("sayHello", "say/{word}", RequestMethod.POST, MediaType.APPLICATION_JSON_VALUE, new MvcBound("100212"),
-						new MvcParam<String>(String.class, "text"))
-				.newMethod(ResponseEntity.class,
-						new MvcMethod("sayHello2", new String[] { "say2/{word}", "say22/{word}" },
-								new RequestMethod[] { RequestMethod.POST, RequestMethod.GET }),
-						new MvcBound("100212"), new MvcParam<String>(String.class, "word", MvcParamFrom.PATH))
-				// 添加 @Controller 注解
-				.restController()
+		Builder<EndpointApi> builder = new ReactiveHandlerBuilder<EndpointApi>()
+				.monoMethod("sayHello", new MvcBound("100212"))
+				.fluxMethod("sayHello2", new MvcBound("100212"))
 				.bind(new MvcBound("12014"))
 				.proxy(invocationHandler)
 				.then()
@@ -91,13 +75,13 @@ public class Bytebuddy_EndpointApiBuilder_Test {
 		}
 
 		Object ctObject = clazz.newInstance();
-
+		
 		System.out.println("=========Methods======================");
 		
-		Method sayHello = clazz.getMethod("sayHello", String.class);
-		sayHello.invoke(ctObject,  " hi Hello " );
-		Method sayHello2 = clazz.getMethod("sayHello2", String.class);
-		sayHello2.invoke(ctObject,  " hi Hello2 " );
+		Method sayHello = clazz.getMethod("sayHello", ServerRequest.class);
+		sayHello.invoke(ctObject,  new Object[] {} );
+		Method sayHello2 = clazz.getMethod("sayHello2", ServerRequest.class);
+		sayHello2.invoke(ctObject,  new Object[] {} );
 
 	}
 	

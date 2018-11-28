@@ -22,7 +22,7 @@ import io.swagger.annotations.Api;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import springfox.documentation.annotations.ApiIgnore;
 
-public class SwaggerApiAnnotationDescriptionUtils {
+public class SwaggerAnnotationUtils {
 
 	/**
 	 * 构造 @Api 注解

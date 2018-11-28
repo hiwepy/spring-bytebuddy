@@ -9,8 +9,9 @@ import java.lang.reflect.Modifier;
 import org.junit.Test;
 import org.springframework.bytebuddy.bytecode.EndpointApi;
 import org.springframework.bytebuddy.bytecode.definition.MvcParam;
+import org.springframework.bytebuddy.intercept.EndpointApiInvocationHandler;
 import org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils;
-import org.springframework.bytebuddy.utils.SwaggerApiAnnotationUtils;
+import org.springframework.bytebuddy.utils.SwaggerAnnotationUtils;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
@@ -24,16 +25,20 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class ByteBuddy_Controller_Test {
 
+	InvocationHandler invocationHandler = new EndpointApiInvocationHandler();
+	
 	@Test
-	public void testClass() throws Exception {
+	public void testProxy() throws Exception {
+
 		
 		Builder<EndpointApi> builder = new ByteBuddy()
 				// 指定随机命名
-				.with(new NamingStrategy.SuffixingRandom("Api212sd"))
+				.with(new NamingStrategy.SuffixingRandom("ApiProxy"))
 				// 继承父类
 				.subclass(EndpointApi.class)
-				// 添加 @Controller 注解
-				.annotateType(EndpointApiAnnotationUtils.annotController("api"))
+				// 添加 @Controller, @Api 注解
+				.annotateType(EndpointApiAnnotationUtils.annotController("api2018"), SwaggerAnnotationUtils.annotApi( "这是一个测试API"))
+				
 				// 定义普通方法
 				.defineMethod("sayHello", String.class, Modifier.PUBLIC)
 				.intercept(FixedValue.value("Hello World ByteBuddy!"))
@@ -66,21 +71,20 @@ public class ByteBuddy_Controller_Test {
 
 	}
 	
-	//@Test
-	public void testInstance() throws Exception {
+	@Test
+	public void testDelegate() throws Exception {
 
-		InvocationHandler invocationHandler = new EndpointApiInvocationHandler();
 
 		Class<?> clazz = new ByteBuddy()
 				// 指定随机命名
-				.with(new NamingStrategy.SuffixingRandom("Api212sd"))
+				.with(new NamingStrategy.SuffixingRandom("ApiDelegate"))
 				// 继承父类
 				.subclass(EndpointApi.class)
 				// 添加 @Controller, @Api 注解
-				.annotateType(EndpointApiAnnotationUtils.annotController("api2018"), SwaggerApiAnnotationUtils.annotApi( "这是一个测试API"))
+				.annotateType(EndpointApiAnnotationUtils.annotController("api2018"), SwaggerAnnotationUtils.annotApi( "这是一个测试API"))
 				// 定义依赖注入的字段
 				.defineField("handler", InvocationHandler.class, Modifier.PROTECTED)
-				.annotateField(EndpointApiAnnotationUtils.annotAutowired(true), EndpointApiAnnotationUtils.annotQualifier(""))
+				.annotateField(EndpointApiAnnotationUtils.annotAutowired(false), EndpointApiAnnotationUtils.annotQualifier("handler"))
 				// 定义普通属性字段
 				.defineProperty("uid", String.class)
 				.defineProperty("name", String.class, true)

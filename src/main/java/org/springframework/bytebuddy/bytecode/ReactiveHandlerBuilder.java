@@ -12,6 +12,7 @@ import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.StubMethod;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.RandomString;
@@ -103,21 +104,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	}
 	
 	/**
-	 * 添加handler字段注解 @Autowired 实现对象注入
-	 * @param required 	： Declares whether the annotated dependency is required.
-	 * @param qualifier ： The qualifier attribute value of @Autowired 
-	 * @param <T> 	 	： 参数泛型
-	 * @return {@link ReactiveHandlerBuilder} instance
-	 */
-	public ReactiveHandlerBuilder<T> autowiredHandler(boolean required, String qualifier) {
-		// 查找依赖注入的字段
-		builder = builder.field(ElementMatchers.fieldType(InvocationHandler.class))
-				.annotateField(EndpointApiAnnotationUtils.annotAutowired(required), EndpointApiAnnotationUtils.annotQualifier(qualifier));
-		return this;
-	}
-	
-	
-	/**
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 * @param uid			: The value of uid
 	 * @param json			: The value of json
@@ -150,8 +136,8 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 		// 定义注解方法：方法注解
 		builder = builder.defineMethod(name, Mono.class, Modifier.PUBLIC)
 				.withParameter(ServerRequest.class, "request")
-				.throwing(Throwable.class)
-				.intercept(StubMethod.INSTANCE)
+				.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
+				.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
 				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
@@ -167,8 +153,8 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 		// 定义注解方法：方法注解
 		builder = builder.defineMethod(name, Flux.class, Modifier.PUBLIC)
 				.withParameter(ServerRequest.class, "request")
-				.throwing(Throwable.class)
-				.intercept(StubMethod.INSTANCE)
+				.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
+				.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
 				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
@@ -179,14 +165,29 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * @param <T> 	   	： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
-	public ReactiveHandlerBuilder<T> intercept(final InvocationHandler handler) {
+	public ReactiveHandlerBuilder<T> proxy(final InvocationHandler handler) {
 		builder = builder.method(ElementMatchers.returns(Mono.class)
 						.or(ElementMatchers.returns(Flux.class)))
 				.intercept(InvocationHandlerAdapter.of(handler));
 		return this;
 	}
 	
-	public Builder<? extends EndpointApi> build() {
+	
+	/**
+	 * 为动态方法添加代理实现
+	 * @param handler  	: 代理实现对象类型
+	 * @param <T>  		: 参数泛型
+	 * @return {@link ReactiveHandlerBuilder} instance
+	 */
+	public ReactiveHandlerBuilder<T> delegate(final Class<?> handler) {
+		builder = builder.method(ElementMatchers.returns(Mono.class)
+				.or(ElementMatchers.returns(Flux.class)))
+				.intercept(MethodDelegation.to(handler));
+		return this;
+	}
+
+	
+	public Builder<? extends EndpointApi> then() {
 		return builder;
 	}
 

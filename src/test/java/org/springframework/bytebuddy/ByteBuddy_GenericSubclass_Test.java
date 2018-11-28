@@ -60,7 +60,7 @@ public class ByteBuddy_GenericSubclass_Test {
 		// Class<?> subClass = unloadedType.load(Main.class.getClassLoader(),
 		// ClassLoadingStrategy.Default.WRAPPER).getLoaded();
 
-		Class<Repository<String>> repositoryClass = (Class<Repository<String>>) Class.forName("org.apache.cxf.endpoint.UserRepository");
+		Class<Repository<String>> repositoryClass = (Class<Repository<String>>) Class.forName("org.springframework.bytebuddy.intercept.UserRepository");
 		System.out.println(repositoryClass.getAnnotation(Scope.class).value()); // 输出 Session
 
 		Repository<String> repository = repositoryClass.newInstance();

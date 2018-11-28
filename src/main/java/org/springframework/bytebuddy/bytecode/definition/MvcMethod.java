@@ -155,10 +155,29 @@ public class MvcMethod {
 	/**
 	 * @param name 			: 方法名称
 	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
+	 * @param method		: 指定请求的method类型， GET、POST、PUT、DELETE等
+	 */
+	public MvcMethod(String name, String[] path, RequestMethod method) {
+		this(name, path, true, method, null, null, null, null);
+	}
+	
+	/**
+	 * @param name 			: 方法名称
+	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
 	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 */
-	public MvcMethod(String name, String[] path, RequestMethod... methods) {
-		this(name, path, false, null, null, null, null, methods);
+	public MvcMethod(String name, String[] path, RequestMethod[] methods) {
+		this(name, path, true, methods, null, null, null, null);
+	}
+	
+	/**
+	 * @param name 			: 方法名称
+	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
+	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
+	 * @param method		: 指定请求的method类型， GET、POST、PUT、DELETE等
+	 */
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod method) {
+		this(name, path, responseBody, method, null, null, null, null);
 	}
 	
 	/**
@@ -167,8 +186,19 @@ public class MvcMethod {
 	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
 	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 */
-	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod... methods) {
-		this(name, path, responseBody, null, null, null, null, methods);
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod[] methods) {
+		this(name, path, responseBody, methods, null, null, null, null);
+	}
+	
+	/**
+	 * @param name 			: 方法名称
+	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
+	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
+	 * @param method		: 指定请求的method类型， GET、POST、PUT、DELETE等
+	 * @param produces		: 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
+	 */
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod method, String[] produces) {
+		this(name, path, responseBody, method, null, null, produces, null);
 	}
 	
 	/**
@@ -178,8 +208,20 @@ public class MvcMethod {
 	 * @param produces		: 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
 	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 */
-	public MvcMethod(String name, String[] path, boolean responseBody, String[] produces, RequestMethod... methods) {
-		this(name, path, responseBody, null, null, produces, null, methods);
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod[] methods, String[] produces) {
+		this(name, path, responseBody, methods, null, null, produces, null);
+	}
+	
+	/**
+	 * @param name 			: 方法名称
+	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
+	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
+	 * @param method		: 指定请求的method类型， GET、POST、PUT、DELETE等
+	 * @param produces		: 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
+	 * @param consumes		: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
+	 */
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod method, String[] produces, String[] consumes) {
+		this(name, path, responseBody, method, null, null, produces, consumes);
 	}
 	
 	/**
@@ -190,30 +232,45 @@ public class MvcMethod {
 	 * @param consumes		: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
 	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 */
-	public MvcMethod(String name, String[] path, boolean responseBody, String[] produces, String[] consumes, RequestMethod... methods) {
-		this(name, path, responseBody, null, null, produces, consumes, methods);
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod[] methods, String[] produces, String[] consumes) {
+		this(name, path, responseBody, methods, null, null, produces, consumes);
 	}
 	
 	/**
 	 * @param name 			: 方法名称
 	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
 	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
+	 * @param method		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 * @param params		: 指定request中必须包含某些参数值是，才让该方法处理
 	 * @param headers		: 指定request中必须包含某些指定的header值，才能让该方法处理请求
 	 * @param produces		: 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
 	 * @param consumes		: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
-	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
 	 */
-	public MvcMethod(String name, String[] path, boolean responseBody, String[] params, String[] headers,
-			String[] produces, String[] consumes, RequestMethod... methods) {
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod method, String[] params, String[] headers,
+			String[] produces, String[] consumes) {
+		this(name, path, responseBody, new RequestMethod[] { method }, params, headers, produces, consumes);
+	}
+	
+	/**
+	 * @param name 			: 方法名称
+	 * @param path			: 指定请求的实际地址， 比如 /action/info之类。
+	 * @param responseBody	: 指定是否添加 @ResponseBody 注解
+	 * @param methods		: 指定请求的method类型， GET、POST、PUT、DELETE等
+	 * @param params		: 指定request中必须包含某些参数值是，才让该方法处理
+	 * @param headers		: 指定request中必须包含某些指定的header值，才能让该方法处理请求
+	 * @param produces		: 指定返回的内容类型，仅当request请求头中的(Accept)类型中包含该指定类型才返回
+	 * @param consumes		: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
+	 */
+	public MvcMethod(String name, String[] path, boolean responseBody, RequestMethod[] methods, String[] params, String[] headers,
+			String[] produces, String[] consumes) {
 		this.name = name;
 		this.path = path;
 		this.responseBody = responseBody;
+		this.method = ArrayUtils.isNotEmpty(methods) ? methods : RequestMethod.values();
 		this.params = ArrayUtils.isNotEmpty(params) ? params : new String[] {};
 		this.headers = ArrayUtils.isNotEmpty(headers) ? headers : new String[] {};
 		this.produces = ArrayUtils.isNotEmpty(produces) ? produces : new String[] {};
 		this.consumes = ArrayUtils.isNotEmpty(consumes) ? consumes : new String[] {};
-		this.method = ArrayUtils.isNotEmpty(methods) ? methods : RequestMethod.values();
 	}
 
 	public RequestMethod[] getMethod() {

@@ -282,8 +282,8 @@ public class EndpointApiAnnotationUtils {
 		AnnotationDescription annot = null;
 		// 多种支持请求方法
 		if(method.getMethod().length > 1) {
-			annot = annotGetMapping(method.getName(), method.getPath(), 
-					method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
+			annot = annotRequestMapping(method.getName(), method.getPath(), 
+					method.getMethod(), method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			return annot;
 		}
 		// 仅支持一种请求方式

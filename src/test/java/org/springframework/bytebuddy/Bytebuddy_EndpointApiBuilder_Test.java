@@ -48,8 +48,8 @@ public class Bytebuddy_EndpointApiBuilder_Test {
 				/*.newMethod("sayHello", "say/{word}", RequestMethod.POST, MediaType.APPLICATION_JSON_VALUE, new MvcBound("100212"),
 						new MvcParam<String>(String.class, "text"))*/
 				.newMethod(ResponseEntity.class,
-						new MvcMethod("sayHello2", new String[] { "say2/{word}", "say22/{word}" }, RequestMethod.POST,
-								RequestMethod.GET),
+						new MvcMethod("sayHello2", new String[] { "say2/{word}", "say22/{word}" },
+								new RequestMethod[] { RequestMethod.POST, RequestMethod.GET }),
 						new MvcBound("100212"), new MvcParam<String>(String.class, "word", MvcParamFrom.PATH))
 
 				// 添加 @Controller 注解

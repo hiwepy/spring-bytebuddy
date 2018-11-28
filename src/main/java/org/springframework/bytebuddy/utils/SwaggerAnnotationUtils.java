@@ -16,10 +16,15 @@
 package org.springframework.bytebuddy.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.bytebuddy.bytecode.definition.MvcParam;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import net.bytebuddy.description.annotation.AnnotationDescription;
+import net.bytebuddy.description.type.TypeDescription;
 import springfox.documentation.annotations.ApiIgnore;
 
 public class SwaggerAnnotationUtils {
@@ -65,6 +70,66 @@ public class SwaggerAnnotationUtils {
 	public static AnnotationDescription annotApiIgnore(String desc) {
 		return AnnotationDescription.Builder.ofType(ApiIgnore.class)
 				.define("value", StringUtils.hasText(desc) ? desc : "")
+				.build();
+	}
+	
+	/**
+	 * 构造 @ApiOperation 注解
+	 * @param summary	: 接口概述
+	 * @param notes		: 接口注意事项
+	 * @return
+	 */
+	public static AnnotationDescription annotApiOperation(String summary, String notes) {
+		return AnnotationDescription.Builder.ofType(ApiOperation.class)
+				.define("value", StringUtils.hasText(summary) ? summary : "")
+				.define("notes", StringUtils.hasText(notes) ? notes : "")
+				.build();
+	}
+	
+	/**
+	 * 构造 @ApiImplicitParams 注解
+	 * @param summary	: 接口概述
+	 * @param notes		: 接口注意事项
+	 * @return
+	 */
+	public static AnnotationDescription annotApiImplicitParams(MvcParam<?>... params) {
+		AnnotationDescription[] paramAnnots = new AnnotationDescription[params.length];
+		for (int i = 0; i < params.length; i++) {
+			paramAnnots[i] = annotApiImplicitParam(params[i]);
+		}
+		AnnotationDescription.Builder builder = AnnotationDescription.Builder.ofType(ApiImplicitParams.class)
+				.defineAnnotationArray("value", TypeDescription.ForLoadedType.of(ApiImplicitParam.class), paramAnnots);
+		return	builder.build();
+	}
+	
+	public static AnnotationDescription annotApiImplicitParam(MvcParam<?> param) {
+		String paramType = "query";
+		switch (param.getFrom()) {
+			case PATH: {
+				paramType = "path";
+			};break;
+			case BODY: {
+				paramType = "body";
+			};break;
+			case HEADER: {
+				paramType = "header";
+			};break;
+			case PARAM: {
+				paramType = "query";
+			};break;
+			default: {
+				paramType = "form";
+			};break;
+		}
+		return AnnotationDescription.Builder.ofType(ApiImplicitParam.class)
+				.define("paramType", paramType)
+				.define("name", param.getName())
+				.define("value", "Param " + param.getName())
+				.define("dataType", param.getType().getName())
+				.define("dataTypeClass", param.getType())
+				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
+				//.define("allowableValues", StringUtils.hasText(notes) ? notes : "")
+				.define("required", param.isRequired())
 				.build();
 	}
 	

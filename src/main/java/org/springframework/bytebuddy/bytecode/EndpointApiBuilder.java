@@ -261,8 +261,9 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	public EndpointApiBuilder<T> newMethod(String name, String path, RequestMethod method, String consumes,
 			MvcBound bound, MvcParam<?>... params) {
         // 为方法添加  @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
-		AnnotationDescription mapping =  EndpointApiAnnotationUtils.annotMethodMapping(new MvcMethod(name, StringUtils.tokenizeToStringArray(path, ","),
-        		true, null, StringUtils.tokenizeToStringArray(consumes, ","), method));
+		MvcMethod mvcMethod = new MvcMethod(name, StringUtils.tokenizeToStringArray(path, ","), true, method, null,
+				StringUtils.tokenizeToStringArray(consumes, ","));
+		AnnotationDescription mapping =  EndpointApiAnnotationUtils.annotMethodMapping(mvcMethod);
 		// 定义注解方法: 方法注解 + 参数注解
 		Initial<? extends EndpointApi> initial = builder.defineMethod(name, Object.class, Modifier.PUBLIC);
 		Annotatable<? extends EndpointApi> annotatable = null;

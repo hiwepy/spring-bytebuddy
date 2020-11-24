@@ -37,8 +37,7 @@ public class SwaggerAnnotationUtils {
 	 * @param consumes 		: Corresponds to the `consumes` field of the operations under this resource.For example, "application/json, application/xml" would suggest the operations accept JSON and XML input.
 	 * @param protocols		: Sets specific protocols (schemes) for the operations under this resource. Possible values: http, https, ws, wss.
 	 * @param authorizations: Corresponds to the `security` field of the Operation Object.   
-	 * @see {@link @Api}
-	 * @return
+	 * @return The Annotation Description
 	 */
 	public static AnnotationDescription annotApi(String name, String[] tags, String produces,
 			String consumes, String protocols, String[] authorizations) {
@@ -55,7 +54,7 @@ public class SwaggerAnnotationUtils {
 	 * 构造 @Api 注解
 	 * @param name : Implicitly sets a tag for the operations, legacy support (read description).
 	 * @param tags : A list of tags for API documentation control.
-	 * @return
+	 * @return The Annotation Description
 	 */
 	public static AnnotationDescription annotApi(String name, String... tags) {
 		return AnnotationDescription.Builder.ofType(Api.class)
@@ -66,6 +65,8 @@ public class SwaggerAnnotationUtils {
 	
 	/**
 	 * 构造 @ApiIgnore 注解
+	 * @param desc : A brief description of why this parameter/operation is ignored
+	 * @return The Annotation Description
 	 */
 	public static AnnotationDescription annotApiIgnore(String desc) {
 		return AnnotationDescription.Builder.ofType(ApiIgnore.class)
@@ -77,7 +78,7 @@ public class SwaggerAnnotationUtils {
 	 * 构造 @ApiOperation 注解
 	 * @param summary	: 接口概述
 	 * @param notes		: 接口注意事项
-	 * @return
+	 * @return The Annotation Description
 	 */
 	public static AnnotationDescription annotApiOperation(String summary, String notes) {
 		return AnnotationDescription.Builder.ofType(ApiOperation.class)
@@ -88,9 +89,8 @@ public class SwaggerAnnotationUtils {
 	
 	/**
 	 * 构造 @ApiImplicitParams 注解
-	 * @param summary	: 接口概述
-	 * @param notes		: 接口注意事项
-	 * @return
+	 * @param params	: 参数描述数组
+	 * @return The Annotation Description
 	 */
 	public static AnnotationDescription annotApiImplicitParams(MvcParam<?>... params) {
 		AnnotationDescription[] paramAnnots = new AnnotationDescription[params.length];
@@ -102,6 +102,11 @@ public class SwaggerAnnotationUtils {
 		return	builder.build();
 	}
 	
+	/**
+	 * 构造 @ApiImplicitParam 注解
+	 * @param param	: 参数描述
+	 * @return The Annotation Description
+	 */
 	public static AnnotationDescription annotApiImplicitParam(MvcParam<?> param) {
 		String paramType = "query";
 		switch (param.getFrom()) {

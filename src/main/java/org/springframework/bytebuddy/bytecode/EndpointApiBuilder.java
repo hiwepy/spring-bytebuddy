@@ -56,10 +56,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 		
 	}
 
-	/**
-	 * @param prefix
-	 * @param randomName
-	 */
 	public EndpointApiBuilder(String prefix, boolean randomName) {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
@@ -93,7 +89,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * 添加类注解 @Api
 	 * @param name : 接口名称
 	 * @param tags : 接口标签名称
-	 * @param <T>  : 参数泛型
 	 * @return {@link EndpointApiBuilder} instance 
 	 */
 	public EndpointApiBuilder<T> api(String name, String... tags) {
@@ -104,7 +99,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 添加类注解  @ApiIgnore
 	 * @param desc : 忽略说明
-	 * @param <T>  : 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> apiIgnore(String desc) {
@@ -114,7 +108,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	
 	/**
 	 * 添加类注解 @Controller
-	 * @param <T>  : 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> controller() {
@@ -125,7 +118,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 添加类注解 @Controller
 	 * @param name : Controller映射地址
-	 * @param <T>  : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> controller(String name) {
@@ -135,7 +127,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	
 	/**
 	 * 添加类注解 @RestController
-	 * @param <T>  : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> restController() {
@@ -146,7 +137,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 添加类注解 @RestController
 	 * @param name : Controller映射地址
-	 * @param <T>  : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> restController(String name) {
@@ -157,7 +147,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 添加类注解 @RequestMapping
 	 * @param mapping			: The {@link MvcMapping} instance
-	 * @param <T>  : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> requestMapping(MvcMapping mapping) {
@@ -168,7 +157,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 添加类注解 @RequestMapping
 	 * @param path			: The path attribute values of @RequestMapping
-	 * @param <T>  : 参数泛型 
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> requestMapping(String path) {
@@ -186,7 +174,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @param headers		: The headers attribute values of @RequestMapping 
 	 * @param consumes		: The consumes attribute values of @RequestMapping 
 	 * @param produces		: The produces attribute values of @RequestMapping
-	 * @param <T>  			: 参数泛型 
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> requestMapping(String name, String[] path, RequestMethod[] method,
@@ -201,7 +188,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @param name		: The name attribute value of @Autowired 
 	 * @param type		: The type attribute value of @Autowired 
 	 * @param required 	: Declares whether the annotated dependency is required.
-	 * @param <T> 	  	: 参数泛型 
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> autowired(String name, Class<?> type, boolean required) {
@@ -216,7 +202,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @param name		: The name attribute value of @Autowired 
 	 * @param required 	: Declares whether the annotated dependency is required.
 	 * @param qualifier : The qualifier attribute value of @Autowired 
-	 * @param <T> 	   : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> autowired( String name, Class<?> type, boolean required, String qualifier) {
@@ -230,7 +215,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 * @param uid			: The value of uid
 	 * @param json			: The value of json
-	 * @param <T>  : 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> bind(final String uid, final String json) {
@@ -240,7 +224,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 * @param bound	: The {@link MvcBound} instance
-	 * @param <T>  	: 参数泛型
 	 * @return {@link Builder} instance
 	 */
 	public EndpointApiBuilder<T> bind(final MvcBound bound) {
@@ -255,7 +238,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @param consumes	 	: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
 	 * @param bound			: 数据绑定对象
 	 * @param params		: 参数信息
-	 * @param <T>  		: 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> newMethod(String name, String path, RequestMethod method, String consumes,
@@ -283,7 +265,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	 * @param method : 方法注释信息
 	 * @param bound  	: 方法绑定数据信息
 	 * @param params 	: 参数信息
-	 * @param <T> 	   : 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */ 
 	public EndpointApiBuilder<T> newMethod(final Class<?> rtClass, final MvcMethod method, final MvcBound bound, MvcParam<?>... params) {
@@ -306,7 +287,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 为动态方法添加代理实现
 	 * @param handler  	: 代理实现对象
-	 * @param <T>  		: 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> proxy(final InvocationHandler handler) {
@@ -323,7 +303,6 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	/**
 	 * 为动态方法添加代理实现
 	 * @param handler  	: 代理实现对象类型
-	 * @param <T>  		: 参数泛型
 	 * @return {@link EndpointApiBuilder} instance
 	 */
 	public EndpointApiBuilder<T> delegate(final Class<?> handler) {

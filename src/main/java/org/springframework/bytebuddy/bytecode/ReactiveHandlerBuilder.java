@@ -42,10 +42,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 		
 	}
 
-	/**
-	 * @param prefix
-	 * @param randomName
-	 */
 	public ReactiveHandlerBuilder(String prefix, boolean randomName) {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
@@ -78,7 +74,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * @param name		： The name attribute value of @Autowired 
 	 * @param type		： The type attribute value of @Autowired 
 	 * @param required 	： Declares whether the annotated dependency is required.
-	 * @param <T> 	  	： 参数泛型 
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> autowired(String name, Class<?> type, boolean required) {
@@ -93,7 +88,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * @param name		： The name attribute value of @Autowired 
 	 * @param required 	： Declares whether the annotated dependency is required.
 	 * @param qualifier ： The qualifier attribute value of @Autowired 
-	 * @param <T> 	  	： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> autowired( String name, Class<T> type, boolean required, String qualifier) {
@@ -107,7 +101,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 * @param uid			: The value of uid
 	 * @param json			: The value of json
-	 * @param <T> 	   		: 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> bind(final String uid, final String json) {
@@ -117,7 +110,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	/**
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 * @param bound			: The {@link MvcBound} instance
-	 * @param <T> 	   ： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> bind(final MvcBound bound) {
@@ -129,7 +121,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * 构造一个返回类型为{@link reactor.core.publisher.Mono} 新的方法
 	 * @param name	  ： 方法名称
 	 * @param bound  ：方法绑定数据信息
-	 * @param <T> 	   ： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */ 
 	public ReactiveHandlerBuilder<T> monoMethod(final String name, final MvcBound bound) {
@@ -146,7 +137,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	 * 构造一个返回类型为{@link reactor.core.publisher.Flux} 新的方法
 	 * @param name	  ： 方法名称
 	 * @param bound  ：方法绑定数据信息
-	 * @param <T> 	   ： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */ 
 	public ReactiveHandlerBuilder<T> fluxMethod(final String name, final MvcBound bound) {
@@ -162,7 +152,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	/**
 	 * 为动态方法添加代理实现
 	 * @param handler  	： 代理实现对象
-	 * @param <T> 	   	： 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> proxy(final InvocationHandler handler) {
@@ -176,7 +165,6 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	/**
 	 * 为动态方法添加代理实现
 	 * @param handler  	: 代理实现对象类型
-	 * @param <T>  		: 参数泛型
 	 * @return {@link ReactiveHandlerBuilder} instance
 	 */
 	public ReactiveHandlerBuilder<T> delegate(final Class<?> handler) {

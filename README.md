@@ -8,6 +8,6 @@
 <dependency>
 	<groupId>com.github.hiwepy</groupId>
 	<artifactId>spring-bytebuddy</artifactId>
-	<version>${project.version}</version>
+	<version>1.0.0.RELEASE</version>
 </dependency>
 ```

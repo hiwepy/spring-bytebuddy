@@ -15,8 +15,8 @@
  */
 package org.springframework.bytebuddy.utils;
 
-import javax.validation.Valid;
 
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

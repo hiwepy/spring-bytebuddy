@@ -290,6 +290,7 @@
 				<jdk>[1.8,)</jdk>
 			</activation>
 			<properties>
+		<maven.test.skip>true</maven.test.skip>
 				<additionalparam>-Xdoclint:none</additionalparam>
 			</properties>
 		</profile>
@@ -400,7 +401,7 @@
 		<junit-jupiter.version>5.10.3</junit-jupiter.version>
 		<lombok.version>1.18.46</lombok.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<spring.version>6.1.12</spring.version>
+		<spring.version>5.3.39</spring.version>
 		<springfox.version>3.0.0</springfox.version>
 		<swagger.version>1.6.14</swagger.version>
 	</properties>

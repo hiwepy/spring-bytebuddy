@@ -4,6 +4,8 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/spring-bytebuddy) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
+spring-bytebuddy 使用 ByteBuddy 在运行时生成 Spring MVC Controller。
+
 ## 目录
 
 - [1. Project Overview](#1-project-overview)

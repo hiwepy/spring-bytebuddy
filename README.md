@@ -4,6 +4,8 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/spring-bytebuddy) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
+spring-bytebuddy generates Spring MVC controllers at runtime with ByteBuddy
+
 ## Table of Contents
 
 - [1. Project Overview](#1-project-overview)

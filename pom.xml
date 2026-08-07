@@ -273,7 +273,7 @@
                 <!-- 覆盖率插件：生成覆盖率报告并校验测试覆盖率（目标 90%） -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
+                <version>${maven-jacoco-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -346,10 +346,10 @@
                 <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+                <central-maven-publishing-plugin.version>0.11.0</central-maven-publishing-plugin.version>
                 <maven.test.skip>true</maven.test.skip>
                 <additionalparam>-Xdoclint:none</additionalparam>
-                <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+                <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
             </properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
@@ -473,7 +473,7 @@
                         <!-- 发布插件：将制品发布到 Maven Central Portal -->
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>${central-publishing-maven-plugin.version}</version>
+                        <version>${central-maven-publishing-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>

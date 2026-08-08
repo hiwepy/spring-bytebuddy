@@ -37,8 +37,10 @@ public class EndpointApiInvocationHandler implements InvocationHandler {
 			}
 		}
 		System.out.println("=========Method Parameters======================");
-		for (Object arg : args) {
-			System.out.println(arg.toString());
+		if (args != null) {
+			for (Object arg : args) {
+				System.out.println(arg != null ? arg.toString() : "null");
+			}
 		}
 		
 		return null;

@@ -13,8 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartResolver;
 
 /**
- * 参数注解类型枚举
- * 
+ * Enumeration of Spring MVC parameter annotation types that determine
+ * how a method parameter value is resolved from an incoming HTTP request.
+ * Each constant maps to a specific Spring annotation used for parameter binding.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see MvcParam
  * @see org.springframework.web.bind.annotation.CookieValue
  * @see org.springframework.web.bind.annotation.MatrixVariable
  * @see org.springframework.web.bind.annotation.PathVariable
@@ -29,7 +34,7 @@ public enum MvcParamFrom {
 	/**
 	 * Annotation which indicates that a method parameter should be bound to an HTTP
 	 * cookie.
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.CookieValue
 	 */
 	COOKIE,
@@ -37,7 +42,7 @@ public enum MvcParamFrom {
 	 * Annotation which indicates that a method parameter should be bound to a
 	 * name-value pair within a path segment. Supported for {@link RequestMapping}
 	 * annotated handler methods in Servlet environments.
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.MatrixVariable
 	 */
 	MATRIX,
@@ -45,13 +50,13 @@ public enum MvcParamFrom {
 	 * Annotation which indicates that a method parameter should be bound to a URI
 	 * template variable. Supported for {@link RequestMapping} annotated handler
 	 * methods in Servlet environments.
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.PathVariable
 	 */
 	PATH,
 	/**
 	 * Annotation to bind a method parameter to a request attribute.
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.RequestAttribute
 	 */
 	ATTR,
@@ -61,7 +66,7 @@ public enum MvcParamFrom {
 	 * {@link HttpMessageConverter} to resolve the method argument depending on the
 	 * content type of the request. Optionally, automatic validation can be applied
 	 * by annotating the argument with {@code @Valid}.
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.RequestBody
 	 */
 	BODY,
@@ -79,7 +84,7 @@ public enum MvcParamFrom {
 	 * String&gt;}, or {@link org.springframework.http.HttpHeaders HttpHeaders} then
 	 * the map is populated with all header names and values.
 	 * </p>
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.RequestHeader
 	 */
 	HEADER,
@@ -102,7 +107,7 @@ public enum MvcParamFrom {
 	 * String&gt;} and a parameter name is not specified, then the map parameter is
 	 * populated with all request parameter names and values.
 	 * </p>
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.RequestParam
 	 */
 	PARAM,
@@ -132,7 +137,7 @@ public enum MvcParamFrom {
 	 * part. @{@link RequestParam} is likely to be used with name-value form fields
 	 * while @{@link RequestPart} is likely to be used with parts containing more
 	 * complex content (e.g. JSON, XML).
-	 * 
+	 *
 	 * @see org.springframework.web.bind.annotation.RequestPart
 	 */
 	PART;

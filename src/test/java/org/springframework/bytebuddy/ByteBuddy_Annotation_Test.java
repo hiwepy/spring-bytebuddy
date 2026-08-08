@@ -19,7 +19,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.xml.ws.Action;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.junit.Test;
 
@@ -30,6 +33,11 @@ import net.bytebuddy.implementation.attribute.MethodAttributeAppender;
 import net.bytebuddy.matcher.ElementMatchers;
 
 public class ByteBuddy_Annotation_Test {
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@interface Action {
+	}
 
 	class AnnotatedMethod {
 		@Action

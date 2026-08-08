@@ -32,30 +32,70 @@ import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.RandomString;
 
 /**
- * 动态构建Controller接口
+ * A builder for dynamically constructing Spring MVC controller interfaces
+ * at runtime using ByteBuddy. This builder generates subclasses of
+ * {@link EndpointApi} annotated with the appropriate Spring MVC annotations
+ * such as {@code @Controller}, {@code @RestController},
+ * {@code @RequestMapping}, and HTTP method-specific mapping annotations.
+ *
+ * <p>Usage example:
+ * <pre>{@code
+ * Builder<EndpointApi> builder = new EndpointApiBuilder<EndpointApi>()
+ *     .restController("/api")
+ *     .newMethod("findById", "/{id}", RequestMethod.GET,
+ *         "application/json", new MvcBound("1"),
+ *         new MvcParam<>(Long.class, "id", MvcParamFrom.PATH))
+ *     .proxy(invocationHandler)
+ *     .then();
+ *
+ * Class<?> clazz = builder.make()
+ *     .load(classLoader, ClassLoadingStrategy.Default.WRAPPER)
+ *     .getLoaded();
+ * }</pre>
+ *
+ * @param <T> the type parameter bounded to {@link EndpointApi}
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see EndpointApi
+ * @see ReactiveHandlerBuilder
  */
 public class EndpointApiBuilder<T extends EndpointApi>{
-	
-	// 构建动态类
+
+	/** The ByteBuddy dynamic type builder for the generated class. */
 	protected Builder<? extends EndpointApi> builder = null;
+
+	/** Generator for random strings used in class naming. */
 	protected RandomString randomString = new RandomString(8);
+
+	/** The default package prefix for generated endpoint classes. */
 	protected static final String PREFIX = "org.springframework.bytebuddy.endpoint.";
 
+	/**
+	 * Creates a new {@code EndpointApiBuilder} with default naming strategy.
+	 * The generated class name will be prefixed with {@value #PREFIX}
+	 * followed by the simple class name and a random suffix.
+	 */
 	public EndpointApiBuilder() {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
-			
+
 			@Override
 			protected String name(TypeDescription typeDescription) {
 				return PREFIX + typeDescription.getSimpleName() + "$" + randomString.nextString();
 			}
-			
+
 		})
-		// 继承父类
 		.subclass(EndpointApi.class);
-		
+
 	}
 
+	/**
+	 * Creates a new {@code EndpointApiBuilder} with a custom package prefix
+	 * and optional random name suffix.
+	 *
+	 * @param prefix     the package prefix for the generated class name
+	 * @param randomName whether to append a random suffix to the class name
+	 */
 	public EndpointApiBuilder(String prefix, boolean randomName) {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
@@ -65,31 +105,35 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 			}
 
 		})
-		// 继承父类
 		.subclass(EndpointApi.class);
 
 	}
 
 	/**
-	 * @param name The fully qualified name of the generated class in a binary format.
+	 * Creates a new {@code EndpointApiBuilder} with a fully specified
+	 * class name for the generated type.
+	 *
+	 * @param name the fully qualified name of the generated class in a binary format
 	 */
 	public EndpointApiBuilder(String name) {
 		builder = new ByteBuddy().subclass(EndpointApi.class).name(name);
 	}
 
 	/**
-	 * 自定义命名策略
-	 * @param namingStrategy : The naming strategy to apply when creating a new auxiliary type.
+	 * Creates a new {@code EndpointApiBuilder} with a custom naming strategy.
+	 *
+	 * @param namingStrategy the naming strategy to apply when creating a new auxiliary type
 	 */
 	public EndpointApiBuilder(final NamingStrategy namingStrategy) {
 		builder = new ByteBuddy().with(namingStrategy).subclass(EndpointApi.class);
 	}
-	
+
 	/**
-	 * 添加类注解 @Api
-	 * @param name : 接口名称
-	 * @param tags : 接口标签名称
-	 * @return {@link EndpointApiBuilder} instance 
+	 * Adds a Swagger {@code @Api} annotation to the generated class.
+	 *
+	 * @param name the API name for the Swagger documentation
+	 * @param tags the tag names for grouping the API endpoints
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> api(String name, String... tags) {
 		builder = builder.annotateType(SwaggerAnnotationUtils.annotApi(name,tags));
@@ -97,57 +141,69 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	}
 
 	/**
-	 * 添加类注解  @ApiIgnore
-	 * @param desc : 忽略说明
-	 * @return {@link EndpointApiBuilder} instance
+	 * Adds a Swagger {@code @ApiIgnore} annotation to the generated class,
+	 * indicating that it should be excluded from API documentation.
+	 *
+	 * @param desc the description of why the API is ignored
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> apiIgnore(String desc) {
 		builder = builder.annotateType(SwaggerAnnotationUtils.annotApiIgnore(desc));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @Controller
-	 * @return {@link EndpointApiBuilder} instance
+	 * Adds a {@code @Controller} annotation to the generated class
+	 * with no explicit component name.
+	 *
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> controller() {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotController(""));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @Controller
-	 * @param name : Controller映射地址
-	 * @return {@link Builder} instance
+	 * Adds a {@code @Controller} annotation to the generated class
+	 * with the specified component name.
+	 *
+	 * @param name the suggested component name for the controller
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> controller(String name) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotController(name));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @RestController
-	 * @return {@link Builder} instance
+	 * Adds a {@code @RestController} annotation to the generated class
+	 * with no explicit component name.
+	 *
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> restController() {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotRestController(""));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @RestController
-	 * @param name : Controller映射地址
-	 * @return {@link Builder} instance
+	 * Adds a {@code @RestController} annotation to the generated class
+	 * with the specified component name.
+	 *
+	 * @param name the suggested component name for the REST controller
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> restController(String name) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotRestController(name));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @RequestMapping
-	 * @param mapping			: The {@link MvcMapping} instance
-	 * @return {@link Builder} instance
+	 * Adds a {@code @RequestMapping} annotation to the generated class
+	 * using the specified {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration containing path, method, and other attributes
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> requestMapping(MvcMapping mapping) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotRequestMapping(mapping));
@@ -155,26 +211,30 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 	}
 
 	/**
-	 * 添加类注解 @RequestMapping
-	 * @param path			: The path attribute values of @RequestMapping
-	 * @return {@link Builder} instance
+	 * Adds a {@code @RequestMapping} annotation to the generated class
+	 * with the specified path.
+	 *
+	 * @param path the path mapping URI (e.g. {@code "/api/resource"})
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> requestMapping(String path) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotRequestMapping(null, new String[] { path }, null,
 				null, null, null, null));
 		return this;
 	}
-	
+
 	/**
-	 * 添加类注解 @RequestMapping
-	 * @param name 			: The name attribute value of @RequestMapping 
-	 * @param path			: The path attribute values of @RequestMapping 
-	 * @param method		: The method attribute values of @RequestMapping 
-	 * @param params		: The params attribute values of @RequestMapping 
-	 * @param headers		: The headers attribute values of @RequestMapping 
-	 * @param consumes		: The consumes attribute values of @RequestMapping 
-	 * @param produces		: The produces attribute values of @RequestMapping
-	 * @return {@link Builder} instance
+	 * Adds a {@code @RequestMapping} annotation to the generated class
+	 * with full mapping configuration.
+	 *
+	 * @param name      the name attribute value of {@code @RequestMapping}
+	 * @param path      the path attribute values of {@code @RequestMapping}
+	 * @param method    the HTTP method attribute values of {@code @RequestMapping}
+	 * @param params    the params attribute values of {@code @RequestMapping}
+	 * @param headers   the headers attribute values of {@code @RequestMapping}
+	 * @param consumes  the consumes attribute values of {@code @RequestMapping}
+	 * @param produces  the produces attribute values of {@code @RequestMapping}
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> requestMapping(String name, String[] path, RequestMethod[] method,
 			String[] params, String[] headers, String[] consumes, String[] produces) {
@@ -182,112 +242,123 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 				params, headers, consumes, produces));
 		return this;
 	}
-	
+
 	/**
-	 * 添加字段注解 @Autowired 实现对象注入
-	 * @param name		: The name attribute value of @Autowired 
-	 * @param type		: The type attribute value of @Autowired 
-	 * @param required 	: Declares whether the annotated dependency is required.
-	 * @return {@link Builder} instance
+	 * Adds a protected field with an {@code @Autowired} annotation
+	 * to the generated class for dependency injection.
+	 *
+	 * @param name     the name of the field to define
+	 * @param type     the type of the dependency to inject
+	 * @param required whether the dependency is required
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> autowired(String name, Class<?> type, boolean required) {
-		// 定义依赖注入的字段
 		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required));
 		return this;
 	}
-	
+
 	/**
-	 * 添加字段注解 @Autowired @Qualifier 实现对象注入
-	 * @param type		: The type attribute value of @Autowired 
-	 * @param name		: The name attribute value of @Autowired 
-	 * @param required 	: Declares whether the annotated dependency is required.
-	 * @param qualifier : The qualifier attribute value of @Autowired 
-	 * @return {@link Builder} instance
+	 * Adds a protected field with {@code @Autowired} and {@code @Qualifier}
+	 * annotations to the generated class for qualified dependency injection.
+	 *
+	 * @param name      the name of the field to define
+	 * @param type      the type of the dependency to inject
+	 * @param required  whether the dependency is required
+	 * @param qualifier the qualifier name for narrowing the injection candidate
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> autowired( String name, Class<?> type, boolean required, String qualifier) {
-		// 定义依赖注入的字段
 		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required),
 				EndpointApiAnnotationUtils.annotQualifier(qualifier));
 		return this;
 	}
-	
+
 	/**
-	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
-	 * @param uid			: The value of uid
-	 * @param json			: The value of json
-	 * @return {@link Builder} instance
+	 * Binds data to the generated class by adding a {@code @WebBound}
+	 * annotation with the specified uid and JSON payload.
+	 *
+	 * @param uid the unique identifier for the data binding
+	 * @param json the JSON payload to bind
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> bind(final String uid, final String json) {
 		return bind(new MvcBound(uid, json));
 	}
-	
+
 	/**
-	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
-	 * @param bound	: The {@link MvcBound} instance
-	 * @return {@link Builder} instance
+	 * Binds data to the generated class by adding a {@code @WebBound}
+	 * annotation with the specified {@link MvcBound} configuration.
+	 *
+	 * @param bound the data binding configuration
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> bind(final MvcBound bound) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
- 
+
 	/**
-	 * @param name		   	: 方法名称
-	 * @param path   		: 发布地址
-	 * @param method 		: 请求方式(GET/POST)
-	 * @param consumes	 	: 指定处理请求的提交内容类型（Content-Type），例如application/json, text/html;
-	 * @param bound			: 数据绑定对象
-	 * @param params		: 参数信息
-	 * @return {@link EndpointApiBuilder} instance
+	 * Defines a new method on the generated class with the specified
+	 * HTTP mapping annotation and parameters. The method return type
+	 * defaults to {@link Object}.
+	 *
+	 * @param name     the method name
+	 * @param path     the request path (comma-separated for multiple paths)
+	 * @param method   the HTTP request method (GET, POST, etc.)
+	 * @param consumes the content type consumed by the method
+	 * @param bound    the data binding configuration
+	 * @param params   the method parameter definitions
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> newMethod(String name, String path, RequestMethod method, String consumes,
 			MvcBound bound, MvcParam<?>... params) {
-        // 为方法添加  @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
 		MvcMethod mvcMethod = new MvcMethod(name, StringUtils.tokenizeToStringArray(path, ","), true, method, null,
 				StringUtils.tokenizeToStringArray(consumes, ","));
 		AnnotationDescription mapping =  EndpointApiAnnotationUtils.annotMethodMapping(mvcMethod);
-		// 定义注解方法: 方法注解 + 参数注解
 		Initial<? extends EndpointApi> initial = builder.defineMethod(name, Object.class, Modifier.PUBLIC);
 		Annotatable<? extends EndpointApi> annotatable = null;
 		for (int i = 0; i < params.length; i++) {
 			annotatable = initial.withParameter(params[i].getType(), params[i].getName())
 					.annotateParameter(EndpointApiAnnotationUtils.annotParam(params[i]));
-		} 
-		builder = annotatable.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
-			.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
+		}
+		builder = annotatable.throwing(Throwable.class)
+			.intercept(StubMethod.INSTANCE)
 			.annotateMethod(mapping, EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
-		
+
 	/**
-	 * 根据参数构造一个新的方法
-	 * @param rtClass : 返回对象类型
-	 * @param method : 方法注释信息
-	 * @param bound  	: 方法绑定数据信息
-	 * @param params 	: 参数信息
-	 * @return {@link EndpointApiBuilder} instance
-	 */ 
+	 * Defines a new method on the generated class with a specified
+	 * return type, method configuration, and parameters.
+	 *
+	 * @param rtClass the return type class for the method
+	 * @param method  the MVC method configuration
+	 * @param bound   the data binding configuration
+	 * @param params  the method parameter definitions
+	 * @return this builder instance for method chaining
+	 */
 	public EndpointApiBuilder<T> newMethod(final Class<?> rtClass, final MvcMethod method, final MvcBound bound, MvcParam<?>... params) {
 
-		// 为方法添加  @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
 		AnnotationDescription mapping =  EndpointApiAnnotationUtils.annotMethodMapping(method);
-		// 定义注解方法: 方法注解 + 参数注解
 		Initial<? extends EndpointApi> initial = builder.defineMethod(method.getName(), rtClass != null ? rtClass : Void.class, Modifier.PUBLIC);
 		Annotatable<? extends EndpointApi> annotatable = null;
 		for (int i = 0; i < params.length; i++) {
 			annotatable = initial.withParameter(params[i].getType(), params[i].getName())
 					.annotateParameter(EndpointApiAnnotationUtils.annotParam(params[i]));
 		}
-		builder = annotatable.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
-			.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
+		builder = annotatable.throwing(Throwable.class)
+			.intercept(StubMethod.INSTANCE)
 			.annotateMethod(mapping, EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
-	
+
 	/**
-	 * 为动态方法添加代理实现
-	 * @param handler  	: 代理实现对象
-	 * @return {@link EndpointApiBuilder} instance
+	 * Adds an {@link InvocationHandler}-based proxy implementation to all
+	 * methods annotated with {@code @RequestMapping} or any HTTP method
+	 * mapping annotation ({@code @GetMapping}, {@code @PostMapping}, etc.).
+	 *
+	 * @param handler the invocation handler that implements the method logic
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> proxy(final InvocationHandler handler) {
 		builder = builder.method(ElementMatchers.isAnnotatedWith(RequestMapping.class)
@@ -299,11 +370,14 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 				.intercept(InvocationHandlerAdapter.of(handler));
 		return this;
 	}
-	
+
 	/**
-	 * 为动态方法添加代理实现
-	 * @param handler  	: 代理实现对象类型
-	 * @return {@link EndpointApiBuilder} instance
+	 * Adds a method delegation-based implementation to all methods annotated
+	 * with {@code @RequestMapping} or any HTTP method mapping annotation.
+	 * Method calls are delegated to the specified handler class.
+	 *
+	 * @param handler the class to which method calls are delegated
+	 * @return this builder instance for method chaining
 	 */
 	public EndpointApiBuilder<T> delegate(final Class<?> handler) {
 		builder = builder.method(ElementMatchers.isAnnotatedWith(RequestMapping.class)
@@ -316,6 +390,12 @@ public class EndpointApiBuilder<T extends EndpointApi>{
 		return this;
 	}
 
+	/**
+	 * Returns the underlying ByteBuddy {@link Builder} for further
+	 * customization of the generated class.
+	 *
+	 * @return the ByteBuddy dynamic type builder
+	 */
 	@SuppressWarnings("unchecked")
 	public Builder<T> then() {
 		return (Builder<T>) builder;

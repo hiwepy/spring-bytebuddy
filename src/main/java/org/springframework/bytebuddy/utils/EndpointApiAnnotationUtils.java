@@ -51,53 +51,77 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.bytebuddy.description.annotation.AnnotationDescription;
 
+/**
+ * Utility class for constructing ByteBuddy {@link AnnotationDescription}
+ * instances that mirror Spring MVC and Spring Framework annotations.
+ * These annotation descriptions are used to annotate dynamically generated
+ * controller classes and their methods, fields, and parameters.
+ *
+ * <p>Supports the following Spring annotations:
+ * <ul>
+ *   <li>Class-level: {@code @Configuration}, {@code @Controller}, {@code @RestController}</li>
+ *   <li>Mapping: {@code @RequestMapping}, {@code @GetMapping}, {@code @PostMapping},
+ *       {@code @PutMapping}, {@code @DeleteMapping}, {@code @PatchMapping}</li>
+ *   <li>Dependency injection: {@code @Autowired}, {@code @Qualifier}, {@code @Bean},
+ *       {@code @Lazy}, {@code @Scope}</li>
+ *   <li>Parameter binding: {@code @RequestParam}, {@code @PathVariable},
+ *       {@code @RequestBody}, {@code @RequestHeader}, {@code @CookieValue},
+ *       {@code @MatrixVariable}, {@code @RequestAttribute}, {@code @RequestPart}</li>
+ *   <li>Custom: {@code @WebBound}</li>
+ * </ul>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see org.springframework.bytebuddy.bytecode.EndpointApiBuilder
+ * @see org.springframework.bytebuddy.bytecode.ReactiveHandlerBuilder
+ */
 public class EndpointApiAnnotationUtils {
 
 	/**
-	 * 构造 @Configuration 注解
-	 * @param name : Explicitly specify the name of the Spring bean definition associated with the
-	 * {@code @Configuration} class. If left unspecified (the common case), a bean
-	 * name will be automatically generated.
-	 * @return The Annotation Description
+	 * Constructs a {@code @Configuration} annotation description.
+	 *
+	 * @param name the explicit bean name for the configuration class,
+	 *             or an empty string for auto-generated naming
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotConfiguration(String name) {
 		return AnnotationDescription.Builder.ofType(Configuration.class)
 				.define("value", StringUtils.hasText(name) ? name : "")
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @Qualifier 注解
-	 * @param name : This annotation may be used on a field or parameter as a qualifier for
-	 * candidate beans when autowiring. 
-	 * @return The Annotation Description
+	 * Constructs a {@code @Qualifier} annotation description.
+	 *
+	 * @param name the qualifier name used to narrow the injection candidate
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotQualifier(String name) {
 		return AnnotationDescription.Builder.ofType(Qualifier.class)
 				.define("value", StringUtils.hasText(name) ? name : "")
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @Autowired 注解
-	 * @param required : Declares whether the annotated dependency is required. Defaults to {@code true}.
-	 * @return The Annotation Description
+	 * Constructs an {@code @Autowired} annotation description.
+	 *
+	 * @param required whether the annotated dependency is required
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotAutowired(boolean required) {
 		return AnnotationDescription.Builder.ofType(Autowired.class)
 				.define("required", required)
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @Bean 注解
-	 * @param name : The name of this bean, or if several names, a primary bean name plus aliases.
-	 * @param initMethod : The optional name of a method to call on the bean instance during initialization.
-	 * Not commonly used, given that the method may be called programmatically directly
-	 * within the body of a Bean-annotated method.
-	 * @param destroyMethod : The optional name of a method to call on the bean instance upon closing the application context
-	 * @param autowireCandidate : Is this bean a candidate for getting autowired into some other bean? Default is {@code true};
-	 * @return The Annotation Description
+	 * Constructs a {@code @Bean} annotation description.
+	 *
+	 * @param name              the bean name(s)
+	 * @param initMethod        the optional initialization method name
+	 * @param destroyMethod     the optional destroy method name
+	 * @param autowireCandidate whether this bean is a candidate for autowiring
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotBean(String[] name, String initMethod, String destroyMethod,
 			boolean autowireCandidate) {
@@ -111,9 +135,10 @@ public class EndpointApiAnnotationUtils {
 	}
 
 	/**
-	 * 构造 @Lazy 注解
-	 * @param lazy : Whether lazy initialization should occur.
-	 * @return The Annotation Description
+	 * Constructs a {@code @Lazy} annotation description.
+	 *
+	 * @param lazy whether lazy initialization should occur
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotLazy(boolean lazy) {
 		return AnnotationDescription.Builder.ofType(Lazy.class)
@@ -122,11 +147,11 @@ public class EndpointApiAnnotationUtils {
 	}
 
 	/**
-	 * 构造 @Scope 注解
-	 * @param scopeName : Specifies the name of the scope to use for the annotated component/bean.
-	 * @param proxyMode : Specifies whether a component should be configured as a scoped proxy
-	 * and if so, whether the proxy should be interface-based or subclass-based.
-	 * @return The Annotation Description 
+	 * Constructs a {@code @Scope} annotation description.
+	 *
+	 * @param scopeName  the name of the scope to use (e.g. "singleton", "prototype")
+	 * @param proxyMode  the scoped proxy mode
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotScope(String scopeName, ScopedProxyMode proxyMode) {
 		return AnnotationDescription.Builder.ofType(Scope.class)
@@ -135,11 +160,12 @@ public class EndpointApiAnnotationUtils {
 				.define("proxyMode", proxyMode != null ? proxyMode : ScopedProxyMode.DEFAULT)
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @Controller 注解
-	 * @param name : the suggested component name, if any (or empty String otherwise)
-	 * @return The Annotation Description
+	 * Constructs a {@code @Controller} annotation description.
+	 *
+	 * @param name the suggested component name, or an empty string for default
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotController(String name) {
 		if (StringUtils.hasText(name)) {
@@ -147,11 +173,12 @@ public class EndpointApiAnnotationUtils {
 		}
 		return AnnotationDescription.Builder.ofType(Controller.class).build();
 	}
-	
+
 	/**
-	 * 构造 @RestController 注解
-	 * @param name : the suggested component name, if any (or empty String otherwise)
-	 * @return The Annotation Description
+	 * Constructs a {@code @RestController} annotation description.
+	 *
+	 * @param name the suggested component name, or an empty string for default
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotRestController(String name) {
 		if (StringUtils.hasText(name)) {
@@ -159,71 +186,86 @@ public class EndpointApiAnnotationUtils {
 		}
 		return AnnotationDescription.Builder.ofType(RestController.class).build();
 	}
-	
+
 	/**
-	 * 构造 @RequestMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @RequestMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotRequestMapping(MvcMapping mapping) {
 		return annotHttpMethod(RequestMapping.class, mapping);
 	}
 
 	/**
-	 * 构造 @GetMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @GetMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotGetMapping(MvcMapping mapping) {
 		return annotHttpMethod(GetMapping.class, mapping);
 	}
-	
+
 	/**
-	 * 构造 @PostMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @PostMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPostMapping(MvcMapping mapping) {
 		return annotHttpMethod(PostMapping.class, mapping);
 	}
-	
+
 	/**
-	 * 构造 @PutMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @PutMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPutMapping(MvcMapping mapping) {
 		return annotHttpMethod(PutMapping.class, mapping);
 	}
-	
+
 	/**
-	 * 构造 @DeleteMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @DeleteMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotDeleteMapping(MvcMapping mapping) {
 		return annotHttpMethod(DeleteMapping.class, mapping);
 	}
-	
+
 	/**
-	 * 构造 @PatchMapping 注解
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs a {@code @PatchMapping} annotation description from
+	 * an {@link MvcMapping} configuration.
+	 *
+	 * @param mapping the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPatchMapping(MvcMapping mapping) {
 		return annotHttpMethod(PatchMapping.class, mapping);
 	}
-	
+
 	/**
-	 * 构造 @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping | 注解
-	 * @param annotation : The Mapping Class
-	 * @param mapping : Mapping Param
-	 * @return The Annotation Description
+	 * Constructs an HTTP method mapping annotation description from
+	 * an {@link MvcMapping} configuration. Handles the method enumeration
+	 * array specially since it requires enum array syntax.
+	 *
+	 * @param annotation the mapping annotation class to construct
+	 * @param mapping    the mapping configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	private static AnnotationDescription annotHttpMethod(
 			Class<? extends java.lang.annotation.Annotation> annotation,
 			MvcMapping mapping) {
-		
+
 		AnnotationDescription.Builder builder = AnnotationDescription.Builder.ofType(annotation)
 				.define("name", StringUtils.hasText(mapping.getName()) ? mapping.getName() : "")
 				.defineArray("value", ArrayUtils.isNotEmpty(mapping.getPath()) ? mapping.getPath() : new String[] {})
@@ -237,14 +279,25 @@ public class EndpointApiAnnotationUtils {
 		}
 		return	builder.build();
 	}
-	
-	/*
-	 * 构造 @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping | 注解
+
+	/**
+	 * Constructs an HTTP method mapping annotation description from
+	 * individual attribute values.
+	 *
+	 * @param annotation the mapping annotation class to construct
+	 * @param name       the mapping name
+	 * @param path       the path mapping URIs
+	 * @param method     the HTTP request methods
+	 * @param params     the required request parameters
+	 * @param headers    the required request headers
+	 * @param consumes   the consumed media types
+	 * @param produces   the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	private static AnnotationDescription annotHttpMethod(
 			Class<? extends java.lang.annotation.Annotation> annotation,String name, String[] path,
 			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
-		
+
 		AnnotationDescription.Builder builder = AnnotationDescription.Builder.ofType(annotation)
 				.define("name", StringUtils.hasText(name) ? name : "")
 				.defineArray("value", ArrayUtils.isNotEmpty(path) ? path : new String[] {})
@@ -258,52 +311,111 @@ public class EndpointApiAnnotationUtils {
 		}
 		return	builder.build();
 	}
-	
-	/*
-	 * 构造 @RequestMapping 注解
+
+	/**
+	 * Constructs a {@code @RequestMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param method   the HTTP request methods
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotRequestMapping(String name, String[] path,
 			RequestMethod[] method, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(RequestMapping.class, name, path, method, params, headers, consumes, produces);
 	}
 
-	/*
-	 * 构造 @GetMapping 注解
+	/**
+	 * Constructs a {@code @GetMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotGetMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(GetMapping.class, name, path, null, params, headers, consumes, produces);
 	}
-	
-	/*
-	 * 构造 @PostMapping 注解
+
+	/**
+	 * Constructs a {@code @PostMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPostMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(PostMapping.class, name, path, null, params, headers, consumes, produces);
 	}
-	
-	/*
-	 * 构造 @PutMapping 注解
+
+	/**
+	 * Constructs a {@code @PutMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPutMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(PutMapping.class, name, path, null, params, headers, consumes, produces);
 	}
-	
-	/*
-	 * 构造 @DeleteMapping 注解
+
+	/**
+	 * Constructs a {@code @DeleteMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotDeleteMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(DeleteMapping.class, name, path, null, params, headers, consumes, produces);
 	}
-	
-	/*
-	 * 构造 @PatchMapping 注解
+
+	/**
+	 * Constructs a {@code @PatchMapping} annotation description from
+	 * individual attribute values.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotPatchMapping(String name, String[] path, String[] params, String[] headers, String[] consumes, String[] produces) {
 		return annotHttpMethod(PatchMapping.class, name, path, null, params, headers, consumes, produces);
 	}
-	
-	/*
-	 * 构造 @WebBound 注解
+
+	/**
+	 * Constructs a {@code @WebBound} annotation description from
+	 * an {@link MvcBound} configuration.
+	 *
+	 * @param bound the data binding configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotBound(MvcBound bound) {
 		return AnnotationDescription.Builder.ofType(WebBound.class)
@@ -311,31 +423,36 @@ public class EndpointApiAnnotationUtils {
 				.define("json", StringUtils.hasText(bound.getJson()) ? bound.getJson() : "")
 				.build();
 	}
-	
-	/*
-	 * 根据参数 构造   @RequestMapping | @GetMapping | @PostMapping | @PutMapping | @DeleteMapping | @PatchMapping 注解
+
+	/**
+	 * Constructs the appropriate HTTP method mapping annotation for a given
+	 * {@link MvcMethod}. If the method specifies multiple HTTP methods, a
+	 * {@code @RequestMapping} is generated; otherwise, a method-specific
+	 * mapping annotation ({@code @GetMapping}, {@code @PostMapping}, etc.)
+	 * is generated.
+	 *
+	 * @param method the MVC method configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotMethodMapping(MvcMethod method) {
-		
+
 		AnnotationDescription annot = null;
-		// 多种支持请求方法
 		if(method.getMethod().length > 1) {
-			annot = annotRequestMapping(method.getName(), method.getPath(), 
+			annot = annotRequestMapping(method.getName(), method.getPath(),
 					method.getMethod(), method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			return annot;
 		}
-		// 仅支持一种请求方式
 		switch (method.getMethod()[0]) {
 			case GET:{
-				annot = annotGetMapping(method.getName(), method.getPath(),  
+				annot = annotGetMapping(method.getName(), method.getPath(),
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case POST:{
-				annot = annotPostMapping(method.getName(), method.getPath(), 
+				annot = annotPostMapping(method.getName(), method.getPath(),
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case PUT:{
-				annot = annotPutMapping(method.getName(), method.getPath(), 
+				annot = annotPutMapping(method.getName(), method.getPath(),
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case DELETE:{
@@ -343,20 +460,24 @@ public class EndpointApiAnnotationUtils {
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			case PATCH:{
-				annot = annotPatchMapping(method.getName(), method.getPath(), 
+				annot = annotPatchMapping(method.getName(), method.getPath(),
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 			default:{
-				annot = annotGetMapping(method.getName(), method.getPath(), 
+				annot = annotGetMapping(method.getName(), method.getPath(),
 						method.getParams(), method.getHeaders(), method.getConsumes(), method.getProduces());
 			};break;
 		}
-		
+
 		return annot;
 	}
-	
-	/*
-	 * 构造 @CookieValue 注解
+
+	/**
+	 * Constructs a {@code @CookieValue} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotCookieValue(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(CookieValue.class)
@@ -366,9 +487,13 @@ public class EndpointApiAnnotationUtils {
 				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
-	
-	/*
-	 * 构造 @MatrixVariable 注解
+
+	/**
+	 * Constructs a {@code @MatrixVariable} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotMatrixVariable(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(MatrixVariable.class)
@@ -379,9 +504,13 @@ public class EndpointApiAnnotationUtils {
 				.define("pathVar", "")
 				.build();
 	}
-	
-	/*
-	 * 构造 @PathVariable 注解
+
+	/**
+	 * Constructs a {@code @PathVariable} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotPathVariable(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(PathVariable.class)
@@ -390,9 +519,13 @@ public class EndpointApiAnnotationUtils {
 				.define("required", param.isRequired())
 				.build();
 	}
-	
-	/*
-	 * 构造 @RequestAttribute 注解
+
+	/**
+	 * Constructs a {@code @RequestAttribute} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotRequestAttribute(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(RequestAttribute.class)
@@ -401,18 +534,26 @@ public class EndpointApiAnnotationUtils {
 				.define("required", param.isRequired())
 				.build();
 	}
-	
-	/*
-	 * 构造 @RequestBody 注解
+
+	/**
+	 * Constructs a {@code @RequestBody} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotRequestBody(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(RequestBody.class)
 				.define("required", param.isRequired())
 				.build();
 	}
-	
-	/*
-	 * 构造 @RequestHeader 注解
+
+	/**
+	 * Constructs a {@code @RequestHeader} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotRequestHeader(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(RequestHeader.class)
@@ -422,9 +563,13 @@ public class EndpointApiAnnotationUtils {
 				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
-	
-	/*
-	 * 构造 @RequestPart 注解
+
+	/**
+	 * Constructs a {@code @RequestPart} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotRequestPart(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(RequestPart.class)
@@ -433,9 +578,13 @@ public class EndpointApiAnnotationUtils {
 				.define("required", param.isRequired())
 				.build();
 	}
-	
-	/*
-	 * 构造 @RequestParam 注解
+
+	/**
+	 * Constructs a {@code @RequestParam} annotation description for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotRequestParam(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(RequestParam.class)
@@ -445,10 +594,15 @@ public class EndpointApiAnnotationUtils {
 				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
 				.build();
 	}
-	
-	/*
-	 * 构造 @CookieValue | @MatrixVariable | @PathVariable | @RequestAttribute | @RequestBody | @RequestHeader
-	 *  | @RequestParam | @RequestPart 参数注解
+
+	/**
+	 * Constructs the appropriate parameter binding annotation based on
+	 * the {@link MvcParamFrom} value of the given parameter. Supports
+	 * all Spring MVC parameter binding annotations.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotParam(MvcParam<T> param) {
 		AnnotationDescription paramAnnot = null;
@@ -483,12 +637,17 @@ public class EndpointApiAnnotationUtils {
 		}
 		return paramAnnot;
 	}
-	
-	/*
-	 * 构造 @Valid 注解
+
+	/**
+	 * Constructs a {@code @Valid} (Jakarta Validation) annotation description
+	 * for a method parameter.
+	 *
+	 * @param <T>   the parameter type
+	 * @param param the parameter configuration
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static <T> AnnotationDescription annotValid(MvcParam<T> param) {
 		return AnnotationDescription.Builder.ofType(Valid.class).build();
 	}
-	
+
 }

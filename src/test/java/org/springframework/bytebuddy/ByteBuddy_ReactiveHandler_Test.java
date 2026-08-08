@@ -79,9 +79,9 @@ public class ByteBuddy_ReactiveHandler_Test {
 		System.out.println("=========Methods======================");
 		
 		Method sayHello = clazz.getMethod("sayHello", ServerRequest.class);
-		sayHello.invoke(ctObject,  new Object[] {} );
+		sayHello.invoke(ctObject, (ServerRequest) null);
 		Method sayHello2 = clazz.getMethod("sayHello2", ServerRequest.class);
-		sayHello2.invoke(ctObject,  new Object[] {} );
+		sayHello2.invoke(ctObject, (ServerRequest) null);
 
 	}
 	

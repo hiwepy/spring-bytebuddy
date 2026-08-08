@@ -20,28 +20,68 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * 动态构建Controller接口
+ * A builder for dynamically constructing reactive endpoint handler classes
+ * at runtime using ByteBuddy. This builder generates subclasses of
+ * {@link EndpointApi} with methods that return {@link Mono} or {@link Flux}
+ * reactive types, suitable for use with Spring WebFlux.
+ *
+ * <p>Usage example:
+ * <pre>{@code
+ * Builder<EndpointApi> builder = new ReactiveHandlerBuilder<EndpointApi>()
+ *     .autowired("handler", ReactiveHandler.class, true)
+ *     .bind(new MvcBound("uid1", "{}"))
+ *     .monoMethod("findById", new MvcBound("uid2", "{}"))
+ *     .proxy(invocationHandler)
+ *     .then();
+ *
+ * Class<?> clazz = builder.make()
+ *     .load(classLoader, ClassLoadingStrategy.Default.WRAPPER)
+ *     .getLoaded();
+ * }</pre>
+ *
+ * @param <T> the type parameter bounded to {@link EndpointApi}
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see EndpointApi
+ * @see ReactiveHandler
+ * @see EndpointApiBuilder
  */
 public class ReactiveHandlerBuilder<T extends EndpointApi> {
-	
-	// 构建动态类
+
+	/** The ByteBuddy dynamic type builder for the generated class. */
 	protected Builder<? extends EndpointApi> builder = null;
+
+	/** Generator for random strings used in class naming. */
 	protected RandomString randomString = new RandomString(8);
+
+	/** The default package prefix for generated endpoint classes. */
 	protected static final String PREFIX = "org.springframework.bytebuddy.endpoint.";
 
+	/**
+	 * Creates a new {@code ReactiveHandlerBuilder} with default naming strategy.
+	 * The generated class name will be prefixed with {@value #PREFIX}
+	 * followed by the simple class name and a random suffix.
+	 */
 	public ReactiveHandlerBuilder() {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
-			
+
 			@Override
 			protected String name(TypeDescription typeDescription) {
 				return PREFIX + typeDescription.getSimpleName() + "$" + randomString.nextString();
 			}
-			
+
 		}).subclass(EndpointApi.class);
-		
+
 	}
 
+	/**
+	 * Creates a new {@code ReactiveHandlerBuilder} with a custom package
+	 * prefix and optional random name suffix.
+	 *
+	 * @param prefix     the package prefix for the generated class name
+	 * @param randomName whether to append a random suffix to the class name
+	 */
 	public ReactiveHandlerBuilder(String prefix, boolean randomName) {
 
 		builder = new ByteBuddy().with(new NamingStrategy.AbstractBase() {
@@ -55,104 +95,120 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 	}
 
 	/**
-	 * @param name The fully qualified name of the generated class in a binary format.
+	 * Creates a new {@code ReactiveHandlerBuilder} with a fully specified
+	 * class name for the generated type.
+	 *
+	 * @param name the fully qualified name of the generated class in a binary format
 	 */
 	public ReactiveHandlerBuilder(String name) {
 		builder = new ByteBuddy().subclass(EndpointApi.class).name(name);
 	}
 
 	/**
-	 * 自定义命名策略
-	 * @param namingStrategy ： The naming strategy to apply when creating a new auxiliary type.
+	 * Creates a new {@code ReactiveHandlerBuilder} with a custom naming strategy.
+	 *
+	 * @param namingStrategy the naming strategy to apply when creating a new auxiliary type
 	 */
 	public ReactiveHandlerBuilder(final NamingStrategy namingStrategy) {
 		builder = new ByteBuddy().with(namingStrategy).subclass(EndpointApi.class);
 	}
-	
+
 	/**
-	 * 添加字段注解 @Autowired 实现对象注入
-	 * @param name		： The name attribute value of @Autowired 
-	 * @param type		： The type attribute value of @Autowired 
-	 * @param required 	： Declares whether the annotated dependency is required.
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Adds a protected field with an {@code @Autowired} annotation
+	 * to the generated class for dependency injection.
+	 *
+	 * @param name     the name of the field to define
+	 * @param type     the type of the dependency to inject
+	 * @param required whether the dependency is required
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> autowired(String name, Class<?> type, boolean required) {
-		// 定义依赖注入的字段
 		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required));
 		return this;
 	}
-	
+
 	/**
-	 * 添加字段注解 @Autowired @Qualifier 实现对象注入
-	 * @param type		： The type attribute value of @Autowired 
-	 * @param name		： The name attribute value of @Autowired 
-	 * @param required 	： Declares whether the annotated dependency is required.
-	 * @param qualifier ： The qualifier attribute value of @Autowired 
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Adds a protected field with {@code @Autowired} and {@code @Qualifier}
+	 * annotations to the generated class for qualified dependency injection.
+	 *
+	 * @param name      the name of the field to define
+	 * @param type      the type of the dependency to inject
+	 * @param required  whether the dependency is required
+	 * @param qualifier the qualifier name for narrowing the injection candidate
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> autowired( String name, Class<T> type, boolean required, String qualifier) {
-		// 定义依赖注入的字段
 		builder = builder.defineField(name, type, Modifier.PROTECTED).annotateField(EndpointApiAnnotationUtils.annotAutowired(required),
 				EndpointApiAnnotationUtils.annotQualifier(qualifier));
 		return this;
 	}
-	
+
 	/**
-	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
-	 * @param uid			: The value of uid
-	 * @param json			: The value of json
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Binds data to the generated class by adding a {@code @WebBound}
+	 * annotation with the specified uid and JSON payload.
+	 *
+	 * @param uid the unique identifier for the data binding
+	 * @param json the JSON payload to bind
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> bind(final String uid, final String json) {
 		return bind(new MvcBound(uid, json));
 	}
-	
+
 	/**
-	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
-	 * @param bound			: The {@link MvcBound} instance
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Binds data to the generated class by adding a {@code @WebBound}
+	 * annotation with the specified {@link MvcBound} configuration.
+	 *
+	 * @param bound the data binding configuration
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> bind(final MvcBound bound) {
 		builder = builder.annotateType(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
-	
+
 	/**
-	 * 构造一个返回类型为{@link reactor.core.publisher.Mono} 新的方法
-	 * @param name	  ： 方法名称
-	 * @param bound  ：方法绑定数据信息
-	 * @return {@link ReactiveHandlerBuilder} instance
-	 */ 
+	 * Defines a new reactive method on the generated class that returns
+	 * a {@link Mono} type. The method accepts a {@link ServerRequest}
+	 * parameter and throws {@link Throwable}.
+	 *
+	 * @param name  the method name
+	 * @param bound the data binding configuration to annotate the method with
+	 * @return this builder instance for method chaining
+	 */
 	public ReactiveHandlerBuilder<T> monoMethod(final String name, final MvcBound bound) {
-		// 定义注解方法：方法注解
 		builder = builder.defineMethod(name, Mono.class, Modifier.PUBLIC)
 				.withParameter(ServerRequest.class, "request")
-				.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
-				.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
+				.throwing(Throwable.class)
+				.intercept(StubMethod.INSTANCE)
 				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
-	
+
 	/**
-	 * 构造一个返回类型为{@link reactor.core.publisher.Flux} 新的方法
-	 * @param name	  ： 方法名称
-	 * @param bound  ：方法绑定数据信息
-	 * @return {@link ReactiveHandlerBuilder} instance
-	 */ 
+	 * Defines a new reactive method on the generated class that returns
+	 * a {@link Flux} type. The method accepts a {@link ServerRequest}
+	 * parameter and throws {@link Throwable}.
+	 *
+	 * @param name  the method name
+	 * @param bound the data binding configuration to annotate the method with
+	 * @return this builder instance for method chaining
+	 */
 	public ReactiveHandlerBuilder<T> fluxMethod(final String name, final MvcBound bound) {
-		// 定义注解方法：方法注解
 		builder = builder.defineMethod(name, Flux.class, Modifier.PUBLIC)
 				.withParameter(ServerRequest.class, "request")
-				.throwing(Throwable.class) /*统一抛出异常以便外部处理*/ 
-				.intercept(StubMethod.INSTANCE)/*根据方法还回类型,自动构建不同类型的return代码*/
+				.throwing(Throwable.class)
+				.intercept(StubMethod.INSTANCE)
 				.annotateMethod(EndpointApiAnnotationUtils.annotBound(bound));
 		return this;
 	}
-	
+
 	/**
-	 * 为动态方法添加代理实现
-	 * @param handler  	： 代理实现对象
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Adds an {@link InvocationHandler}-based proxy implementation to all
+	 * methods that return {@link Mono} or {@link Flux} reactive types.
+	 *
+	 * @param handler the invocation handler that implements the method logic
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> proxy(final InvocationHandler handler) {
 		builder = builder.method(ElementMatchers.returns(Mono.class)
@@ -160,12 +216,15 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 				.intercept(InvocationHandlerAdapter.of(handler));
 		return this;
 	}
-	
-	
+
+
 	/**
-	 * 为动态方法添加代理实现
-	 * @param handler  	: 代理实现对象类型
-	 * @return {@link ReactiveHandlerBuilder} instance
+	 * Adds a method delegation-based implementation to all methods that
+	 * return {@link Mono} or {@link Flux} reactive types. Method calls
+	 * are delegated to the specified handler class.
+	 *
+	 * @param handler the class to which method calls are delegated
+	 * @return this builder instance for method chaining
 	 */
 	public ReactiveHandlerBuilder<T> delegate(final Class<?> handler) {
 		builder = builder.method(ElementMatchers.returns(Mono.class)
@@ -174,6 +233,12 @@ public class ReactiveHandlerBuilder<T extends EndpointApi> {
 		return this;
 	}
 
+	/**
+	 * Returns the underlying ByteBuddy {@link Builder} for further
+	 * customization of the generated class.
+	 *
+	 * @return the ByteBuddy dynamic type builder
+	 */
 	@SuppressWarnings("unchecked")
 	public Builder<T> then() {
 		return (Builder<T>) builder;

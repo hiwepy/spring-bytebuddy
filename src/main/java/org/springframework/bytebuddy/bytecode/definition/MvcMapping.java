@@ -3,6 +3,20 @@ package org.springframework.bytebuddy.bytecode.definition;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Configuration object that encapsulates the attributes of Spring MVC
+ * request mapping annotations ({@code @RequestMapping}, {@code @GetMapping},
+ * {@code @PostMapping}, etc.). Used by the ByteBuddy-based endpoint builders
+ * to define how generated controller methods should handle HTTP requests.
+ *
+ * <p>Supports path patterns, HTTP methods, parameter constraints, header
+ * constraints, and content negotiation via consumes/produces media types.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see org.springframework.web.bind.annotation.RequestMapping
+ * @see MvcMethod
+ */
 public class MvcMapping {
 
 
@@ -15,7 +29,7 @@ public class MvcMapping {
 	 * @see org.springframework.web.servlet.handler.HandlerMethodMappingNamingStrategy
 	 */
 	private String name = "";
-	
+
 	/**
 	 * In a Servlet environment only: the path mapping URIs (e.g. "/myPath.do").
 	 * Ant-style path patterns are also supported (e.g. "/myPath/*.do").
@@ -38,7 +52,7 @@ public class MvcMapping {
 	 * gets checked before the handler method is even resolved).
 	 */
 	private RequestMethod[] method = RequestMethod.values();
-	
+
 
 	/**
 	 * The parameters of the mapped request, narrowing the primary mapping.
@@ -59,7 +73,7 @@ public class MvcMapping {
 	 * simply expressing preconditions for invoking the handler.
 	 */
 	private String[] params = new String[]{};
-	
+
 
 	/**
 	 * The headers of the mapped request, narrowing the primary mapping.
@@ -83,7 +97,7 @@ public class MvcMapping {
 	 * @see org.springframework.http.MediaType
 	 */
 	private String[] headers = new String[]{};
-	
+
 	/**
 	 * The consumable media types of the mapped request, narrowing the primary mapping.
 	 * <p>The format is a single media type or a sequence of media types,
@@ -99,10 +113,10 @@ public class MvcMapping {
 	 * When used at the type level, all method-level mappings override
 	 * this consumes restriction.
 	 * @see org.springframework.http.MediaType
-	 * @see javax.servlet.http.HttpServletRequest#getContentType()
+	 * @see jakarta.servlet.http.HttpServletRequest#getContentType()
 	 */
 	private String[] consumes = new String[]{};
-	
+
 	/**
 	 * The producible media types of the mapped request, narrowing the primary mapping.
 	 * <p>The format is a single media type or a sequence of media types,
@@ -123,12 +137,29 @@ public class MvcMapping {
 	 * @see org.springframework.http.MediaType
 	 */
 	private String[] produces = new String[] { MediaType.ALL_VALUE };
-	
+
+	/**
+	 * Creates a new {@code MvcMapping} with the specified path and method(s).
+	 *
+	 * @param path   the path mapping URIs
+	 * @param method the HTTP request methods to map to
+	 */
 	public MvcMapping(String[] path, RequestMethod... method) {
 		this.path = path;
 		this.method = method;
 	}
 
+	/**
+	 * Creates a new {@code MvcMapping} with full configuration.
+	 *
+	 * @param name     the mapping name
+	 * @param path     the path mapping URIs
+	 * @param method   the HTTP request methods to map to
+	 * @param params   the required request parameters
+	 * @param headers  the required request headers
+	 * @param consumes the consumed media types
+	 * @param produces the produced media types
+	 */
 	public MvcMapping(String name, String[] path, RequestMethod[] method, String[] params, String[] headers,
 			String[] consumes, String[] produces) {
 		this.name = name;
@@ -140,55 +171,119 @@ public class MvcMapping {
 		this.produces = produces;
 	}
 
-
+	/**
+	 * Returns the mapping name.
+	 *
+	 * @return the mapping name, or an empty string if not set
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets the mapping name.
+	 *
+	 * @param name the mapping name to set
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Returns the HTTP request methods for this mapping.
+	 *
+	 * @return the array of request methods
+	 */
 	public RequestMethod[] getMethod() {
 		return method;
 	}
 
+	/**
+	 * Sets the HTTP request methods for this mapping.
+	 *
+	 * @param method the array of request methods to set
+	 */
 	public void setMethod(RequestMethod[] method) {
 		this.method = method;
 	}
 
+	/**
+	 * Returns the required request parameters.
+	 *
+	 * @return the array of parameter expressions
+	 */
 	public String[] getParams() {
 		return params;
 	}
 
+	/**
+	 * Sets the required request parameters.
+	 *
+	 * @param params the array of parameter expressions to set
+	 */
 	public void setParams(String[] params) {
 		this.params = params;
 	}
 
+	/**
+	 * Returns the required request headers.
+	 *
+	 * @return the array of header expressions
+	 */
 	public String[] getHeaders() {
 		return headers;
 	}
 
+	/**
+	 * Sets the required request headers.
+	 *
+	 * @param headers the array of header expressions to set
+	 */
 	public void setHeaders(String[] headers) {
 		this.headers = headers;
 	}
 
+	/**
+	 * Returns the consumed media types.
+	 *
+	 * @return the array of consumed media type strings
+	 */
 	public String[] getConsumes() {
 		return consumes;
 	}
 
+	/**
+	 * Sets the consumed media types.
+	 *
+	 * @param consumes the array of consumed media type strings to set
+	 */
 	public void setConsumes(String[] consumes) {
 		this.consumes = consumes;
 	}
 
+	/**
+	 * Returns the produced media types.
+	 *
+	 * @return the array of produced media type strings
+	 */
 	public String[] getProduces() {
 		return produces;
 	}
 
+	/**
+	 * Sets the produced media types.
+	 *
+	 * @param produces the array of produced media type strings to set
+	 */
 	public void setProduces(String[] produces) {
 		this.produces = produces;
 	}
 
+	/**
+	 * Returns the path mapping URIs.
+	 *
+	 * @return the array of path strings
+	 */
 	public String[] getPath() {
 		return path;
 	}

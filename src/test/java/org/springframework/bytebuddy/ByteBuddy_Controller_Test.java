@@ -96,7 +96,7 @@ public class ByteBuddy_Controller_Test {
 		
 		//Class<?> clazz = Class.forName("org.springframework.bytebuddy.ProxyTest");
 		
-		Class<?> clazz = unloadedType.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+		Class<?> clazz = unloadedType.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER).getLoaded();
 
 		System.out.println("=========Type Annotations======================");
 		for (Annotation element : clazz.getAnnotations()) {
@@ -198,7 +198,7 @@ public class ByteBuddy_Controller_Test {
 		
 		//Class<?> clazz = Class.forName("org.springframework.bytebuddy.DelegateTest");
 		
-		Class<?> clazz = unloadedType.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+		Class<?> clazz = unloadedType.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER).getLoaded();
 
 		System.out.println("=========Type Annotations======================");
 		for (Annotation element : clazz.getAnnotations()) {

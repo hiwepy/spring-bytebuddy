@@ -27,17 +27,37 @@ import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import springfox.documentation.annotations.ApiIgnore;
 
+/**
+ * Utility class for constructing ByteBuddy {@link AnnotationDescription}
+ * instances that mirror Swagger/Springfox annotations. These annotation
+ * descriptions are used to annotate dynamically generated controller
+ * classes and methods with Swagger documentation metadata.
+ *
+ * <p>Supports the following Swagger annotations:
+ * <ul>
+ *   <li>{@code @Api} - class-level API documentation</li>
+ *   <li>{@code @ApiIgnore} - exclude from documentation</li>
+ *   <li>{@code @ApiOperation} - method-level operation documentation</li>
+ *   <li>{@code @ApiImplicitParam} / {@code @ApiImplicitParams} - parameter documentation</li>
+ * </ul>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see EndpointApiAnnotationUtils
+ * @see org.springframework.bytebuddy.bytecode.EndpointApiBuilder
+ */
 public class SwaggerAnnotationUtils {
 
 	/**
-	 * 构造 @Api 注解
-	 * @param name 			: Implicitly sets a tag for the operations, legacy support (read description).
-	 * @param tags 			: A list of tags for API documentation control.
-	 * @param produces 		: Corresponds to the `produces` field of the operations under this resource.
-	 * @param consumes 		: Corresponds to the `consumes` field of the operations under this resource.For example, "application/json, application/xml" would suggest the operations accept JSON and XML input.
-	 * @param protocols		: Sets specific protocols (schemes) for the operations under this resource. Possible values: http, https, ws, wss.
-	 * @param authorizations: Corresponds to the `security` field of the Operation Object.   
-	 * @return The Annotation Description
+	 * Constructs a {@code @Api} annotation description with full configuration.
+	 *
+	 * @param name           implicitly sets a tag for the operations (legacy support)
+	 * @param tags           a list of tags for API documentation control
+	 * @param produces       corresponds to the produces field of operations under this resource
+	 * @param consumes       corresponds to the consumes field of operations under this resource
+	 * @param protocols      sets specific protocols (schemes) for operations (http, https, ws, wss)
+	 * @param authorizations corresponds to the security field of the Operation Object
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApi(String name, String[] tags, String produces,
 			String consumes, String protocols, String[] authorizations) {
@@ -49,36 +69,41 @@ public class SwaggerAnnotationUtils {
 				.define("protocols", StringUtils.hasText(protocols) ? protocols : "")
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @Api 注解
-	 * @param name : Implicitly sets a tag for the operations, legacy support (read description).
-	 * @param tags : A list of tags for API documentation control.
-	 * @return The Annotation Description
+	 * Constructs a {@code @Api} annotation description with name and tags only.
+	 *
+	 * @param name implicitly sets a tag for the operations (legacy support)
+	 * @param tags a list of tags for API documentation control
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApi(String name, String... tags) {
 		return AnnotationDescription.Builder.ofType(Api.class)
 				.define("value", StringUtils.hasText(name) ? name : "")
 				.defineArray("tags", ArrayUtils.isEmpty(tags) ? new String[] { "" } : tags)
 				.build();
-	} 
-	
+	}
+
 	/**
-	 * 构造 @ApiIgnore 注解
-	 * @param desc : A brief description of why this parameter/operation is ignored
-	 * @return The Annotation Description
+	 * Constructs an {@code @ApiIgnore} annotation description to exclude
+	 * the annotated element from Swagger documentation.
+	 *
+	 * @param desc a brief description of why this element is ignored
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApiIgnore(String desc) {
 		return AnnotationDescription.Builder.ofType(ApiIgnore.class)
 				.define("value", StringUtils.hasText(desc) ? desc : "")
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @ApiOperation 注解
-	 * @param summary	: 接口概述
-	 * @param notes		: 接口注意事项
-	 * @return The Annotation Description
+	 * Constructs an {@code @ApiOperation} annotation description for
+	 * documenting a handler method.
+	 *
+	 * @param summary a brief summary of the operation
+	 * @param notes   detailed notes about the operation
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApiOperation(String summary, String notes) {
 		return AnnotationDescription.Builder.ofType(ApiOperation.class)
@@ -86,11 +111,13 @@ public class SwaggerAnnotationUtils {
 				.define("notes", StringUtils.hasText(notes) ? notes : "")
 				.build();
 	}
-	
+
 	/**
-	 * 构造 @ApiImplicitParams 注解
-	 * @param params	: 参数描述数组
-	 * @return The Annotation Description
+	 * Constructs an {@code @ApiImplicitParams} annotation description
+	 * containing multiple {@code @ApiImplicitParam} entries.
+	 *
+	 * @param params the parameter descriptions
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApiImplicitParams(MvcParam<?>... params) {
 		AnnotationDescription[] paramAnnots = new AnnotationDescription[params.length];
@@ -101,11 +128,15 @@ public class SwaggerAnnotationUtils {
 				.defineAnnotationArray("value", TypeDescription.ForLoadedType.of(ApiImplicitParam.class), paramAnnots);
 		return	builder.build();
 	}
-	
+
 	/**
-	 * 构造 @ApiImplicitParam 注解
-	 * @param param	: 参数描述
-	 * @return The Annotation Description
+	 * Constructs an {@code @ApiImplicitParam} annotation description for
+	 * a single method parameter. The parameter type (path, query, body,
+	 * header, or form) is automatically derived from the parameter's
+	 * {@link MvcParam#getFrom()} value.
+	 *
+	 * @param param the parameter description
+	 * @return the constructed {@link AnnotationDescription}
 	 */
 	public static AnnotationDescription annotApiImplicitParam(MvcParam<?> param) {
 		String paramType = "query";
@@ -133,9 +164,8 @@ public class SwaggerAnnotationUtils {
 				.define("dataType", param.getType().getName())
 				.define("dataTypeClass", param.getType())
 				.define("defaultValue", StringUtils.hasText(param.getDef()) ? param.getDef() : "")
-				//.define("allowableValues", StringUtils.hasText(notes) ? notes : "")
 				.define("required", param.isRequired())
 				.build();
 	}
-	
+
 }

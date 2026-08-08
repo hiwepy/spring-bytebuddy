@@ -1,44 +1,84 @@
 package org.springframework.bytebuddy.bytecode.definition;
 
 /**
- * 数据绑定对象，用于通过<code>@WebBound</code>注解实现与方法相关数据的绑定
+ * Data binding object used to associate data with a dynamically generated
+ * endpoint method or class via the {@code @WebBound} annotation. Carries
+ * a unique identifier and an optional JSON payload.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see org.springframework.bytebuddy.annotation.WebBound
+ * @see org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils#annotBound(MvcBound)
  */
 public class MvcBound {
-    
+
+    /**
+     * Creates a new {@code MvcBound} with the specified uid and
+     * an empty JSON payload.
+     *
+     * @param uid the unique identifier for the data binding
+     */
     public MvcBound(String uid) {
     	this.uid = uid;
 	}
-    
+
+    /**
+     * Creates a new {@code MvcBound} with the specified uid and JSON payload.
+     *
+     * @param uid  the unique identifier for the data binding
+     * @param json the JSON-formatted data payload
+     */
 	public MvcBound(String uid, String json) {
 		this.uid = uid;
 		this.json = json;
 	}
 
 	/**
-	 * 1、uid：某个数据主键，可用于传输主键ID在实现对象中进行数据提取
+	 * A unique identifier (e.g. a primary key) that can be used by
+	 * the handler implementation to look up data.
 	 */
 	private String uid = "";
 
 	/**
-	 * 2、json：绑定的数据对象JSON格式，为了方便，这里采用json进行数据传输
+	 * A JSON-formatted data payload bound to the endpoint for use
+	 * during request handling.
 	 */
 	private String json = "";
 
+	/**
+	 * Returns the unique identifier for this data binding.
+	 *
+	 * @return the uid string
+	 */
 	public String getUid() {
 		return uid;
 	}
 
+	/**
+	 * Sets the unique identifier for this data binding.
+	 *
+	 * @param uid the uid string to set
+	 */
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
 
+	/**
+	 * Returns the JSON data payload for this data binding.
+	 *
+	 * @return the JSON string
+	 */
 	public String getJson() {
 		return json;
 	}
 
+	/**
+	 * Sets the JSON data payload for this data binding.
+	 *
+	 * @param json the JSON string to set
+	 */
 	public void setJson(String json) {
 		this.json = json;
 	}
 
 }
-

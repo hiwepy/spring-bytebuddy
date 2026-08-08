@@ -346,7 +346,7 @@
                 <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <central-maven-publishing-plugin.version>0.11.0</central-maven-publishing-plugin.version>
+                <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
                 <maven.test.skip>true</maven.test.skip>
                 <additionalparam>-Xdoclint:none</additionalparam>
                 <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
@@ -473,7 +473,7 @@
                         <!-- 发布插件：将制品发布到 Maven Central Portal -->
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>${central-maven-publishing-plugin.version}</version>
+                        <version>${maven-central-publishing-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>

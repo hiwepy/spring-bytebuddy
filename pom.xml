@@ -194,7 +194,7 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
-                        <argLine>-Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m
+                        <argLine>-Xmx1024m
 							-Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>

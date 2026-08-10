@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * <p>Supports path patterns, HTTP methods, parameter constraints, header
  * constraints, and content negotiation via consumes/produces media types.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see org.springframework.web.bind.annotation.RequestMapping
  * @see MvcMethod

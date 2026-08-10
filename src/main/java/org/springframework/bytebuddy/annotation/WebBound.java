@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * {@code EndpointApiBuilder} to bind request data to dynamically
  * constructed Spring MVC controller classes or handler methods.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see org.springframework.bytebuddy.bytecode.EndpointApiBuilder
  * @see org.springframework.bytebuddy.bytecode.ReactiveHandlerBuilder

@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
  * <p>This class is typically used with {@link ReactiveHandlerBuilder}
  * to generate dynamic reactive endpoint classes via ByteBuddy delegation.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see ReactiveHandlerBuilder
  * @see EndpointApi

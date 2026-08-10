@@ -5,7 +5,7 @@ package org.springframework.bytebuddy.bytecode.definition;
  * endpoint method or class via the {@code @WebBound} annotation. Carries
  * a unique identifier and an optional JSON payload.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see org.springframework.bytebuddy.annotation.WebBound
  * @see org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils#annotBound(MvcBound)

@@ -40,7 +40,7 @@ import reactor.core.publisher.Mono;
  * }</pre>
  *
  * @param <T> the type parameter bounded to {@link EndpointApi}
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see EndpointApi
  * @see ReactiveHandler

@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartResolver;
  * how a method parameter value is resolved from an incoming HTTP request.
  * Each constant maps to a specific Spring annotation used for parameter binding.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see MvcParam
  * @see org.springframework.web.bind.annotation.CookieValue

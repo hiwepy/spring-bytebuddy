@@ -10,7 +10,7 @@ package org.springframework.bytebuddy.bytecode.definition;
  * such as {@code @RequestParam}, {@code @PathVariable}, {@code @RequestBody}, etc.</p>
  *
  * @param <T> the Java type of the method parameter
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see MvcParamFrom
  * @see org.springframework.bytebuddy.utils.EndpointApiAnnotationUtils#annotParam(MvcParam)

@@ -27,7 +27,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 /**
  * http://bytebuddy.net/#/tutorial
  * http://xiangshouxiyang.iteye.com/blog/2377664
- * @author <a href="https://github.com/hiwepy">hiwepy</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 public class ByteBuddy_ReactiveHandler_Test {
 

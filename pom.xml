@@ -8,7 +8,6 @@
     <version>1.0.x.20260630-SNAPSHOT</version>
     <description>基于byte-buddy生成Spring MVC 框架的Controller</description>
     <packaging>jar</packaging>
-
     <!-- 开源协议采用 Apache 2.0 协议 -->
     <licenses>
         <license>
@@ -16,7 +15,6 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
     <!-- 源码仓库（SCM）信息 -->
     <scm>
         <connection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</connection>
@@ -24,7 +22,6 @@
         <url>https://github.com/easy-4-java/${project.artifactId}</url>
         <tag>${project.artifactId}</tag>
     </scm>
-
     <!-- 开发者信息 -->
     <developers>
         <developer>
@@ -37,7 +34,6 @@
             <timezone>+8</timezone>
         </developer>
     </developers>
-
     <!-- 构建 Profile 配置 -->
     <profiles>
         <profile>
@@ -46,72 +42,68 @@
                 <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-            <!-- Dependency versions -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <maven.test.skip>true</maven.test.skip>
-            <!-- Maven Plugin versions -->
-                    <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
-                    <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
+                <!-- Dependency versions -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+                <maven.test.skip>true</maven.test.skip>
+                <!-- Maven Plugin versions -->
+                <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
+                <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
             </properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
-
         <profile>
             <id>release</id>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Pcentral deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
-
         <profile>
             <id>central</id>
         </profile>
     </profiles>
-
     <!-- 版本属性定义：Java 版本、依赖版本与 Maven 插件版本统一管理 -->
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
-            <java.version>1.8</java.version>
-            <maven.compiler.release>${java.version}</maven.compiler.release>
-            <maven.version>3.9.16</maven.version>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            <!-- Dependency versions -->
-            <byte-buddy.version>1.14.16</byte-buddy.version>
-            <commons-beanutils.version>1.11.0</commons-beanutils.version>
-            <commons-io.version>2.22.0</commons-io.version>
-            <commons-lang3.version>3.20.0</commons-lang3.version>
-            <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
-            <jakarta-validation.version>3.0.2</jakarta-validation.version>
-            <junit-jupiter.version>5.11.4</junit-jupiter.version>
-            <junit.version>4.13.2</junit.version>
-            <lombok.version>1.18.46</lombok.version>
-            <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-            <slf4j.version>2.0.18</slf4j.version>
-            <spring.version>5.3.39</spring.version>
-            <springfox.version>3.0.0</springfox.version>
-            <swagger.version>1.6.14</swagger.version>
-            <!-- Maven Plugin versions -->
-            <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
-            <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-            <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-            <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
-            <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
-            <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-            <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
-            <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-            <maven-help-plugin.version>3.5.0</maven-help-plugin.version>
-            <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-            <maven-invoker-plugin.version>3.8.0</maven-invoker-plugin.version>
-            <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
-            <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-            <maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
-            <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-            <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-            <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
-            <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-            <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-            <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+        <java.version>1.8</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.version>3.9.16</maven.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Dependency versions -->
+        <byte-buddy.version>1.14.16</byte-buddy.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
+        <jakarta-validation.version>3.0.2</jakarta-validation.version>
+        <junit-jupiter.version>5.11.4</junit-jupiter.version>
+        <junit.version>4.13.2</junit.version>
+        <lombok.version>1.18.46</lombok.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <slf4j.version>2.0.18</slf4j.version>
+        <spring.version>5.3.39</spring.version>
+        <springfox.version>3.0.0</springfox.version>
+        <swagger.version>1.6.14</swagger.version>
+        <!-- Maven Plugin versions -->
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-help-plugin.version>3.5.0</maven-help-plugin.version>
+        <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+        <maven-invoker-plugin.version>3.8.0</maven-invoker-plugin.version>
+        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
+        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
     </properties>
-
     <!-- 依赖版本统一管理（dependencyManagement） -->
     <dependencyManagement>
         <dependencies>
@@ -208,7 +200,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <!-- 项目依赖（dependencies） -->
     <dependencies>
         <!-- For Lombok -->
@@ -303,7 +294,6 @@
         <finalName>${project.artifactId}</finalName>
         <pluginManagement>
             <plugins>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
                 <plugin>
                     <!-- 编译插件：编译主代码至主输出目录 -->
@@ -317,7 +307,6 @@
                         <maxmem>512M</maxmem>
                     </configuration>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin -->
                 <plugin>
                     <!-- 发布插件：将项目输出构件部署到远程仓库 -->
@@ -325,7 +314,6 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven-deploy-plugin.version}</version>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
                 <plugin>
                     <!-- 环境检查插件：代码编译前的环境监察 -->
@@ -358,7 +346,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
                 <plugin>
                     <!-- 签名插件：对制品进行 PGP 签名 -->
@@ -375,7 +362,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-install-plugin -->
                 <plugin>
                     <!-- 安装插件：将项目输出构件安装到本地仓库 -->
@@ -383,7 +369,6 @@
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven-install-plugin.version}</version>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
                 <plugin>
                     <!-- 资源插件：复制主资源文件至主输出目录 -->
@@ -394,7 +379,6 @@
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-release-plugin -->
                 <plugin>
                     <!-- 发布管理插件：版本发布与标签管理 -->
@@ -409,7 +393,6 @@
                         <goals>deploy</goals>
                     </configuration>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
                 <plugin>
                     <!-- 源码插件：发布时自动将源码同时发布 -->
@@ -428,7 +411,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
                 <plugin>
                     <!-- 单元测试插件：执行测试用例 -->
@@ -451,7 +433,6 @@
                         </excludes>
                     </configuration>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
                 <plugin>
                     <!-- jar 包生成插件：创建项目 jar 包 -->
@@ -470,7 +451,6 @@
                         </archive>
                     </configuration>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
                 <plugin>
                     <!-- 文档插件：发布时自动生成 Javadoc 并发布 -->
@@ -492,7 +472,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
@@ -511,7 +490,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-
             <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
             <plugin>
                 <!-- 覆盖率插件：生成覆盖率报告并校验测试覆盖率（目标 90%） -->
@@ -556,7 +534,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <!-- 编译插件：编译主代码至主输出目录 -->

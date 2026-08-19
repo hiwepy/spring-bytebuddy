@@ -87,10 +87,8 @@
                             <configuration>
                                 <rules>
                                     <requireMavenVersion>
-                                        <message>
-                                            You are running an older version of Maven. This application requires at least Maven ${maven.version}.
-                                        </message>
-                                        <version>[${maven.version}.0,)</version>
+                                        <message><![CDATA[You are running an older version of Maven. This application requires at least Maven 4.]]></message>
+                                        <version>[4.0.0,)</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <message>
@@ -445,11 +443,10 @@
     </profiles>
 
     <properties>
+        <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
         <java.version>21</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.version>3.0</maven.version>
+        <maven.version>4.0.0-rc-5</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <byte-buddy.version>1.14.16</byte-buddy.version>

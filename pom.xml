@@ -44,8 +44,7 @@
                 <!-- Dependency versions -->
                 <additionalparam>-Xdoclint:none</additionalparam>
                 <maven.test.skip>true</maven.test.skip>
-            
-    </properties>
+            </properties>
         </profile>
         <profile>
             <id>release</id>
@@ -98,7 +97,6 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-    
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -294,8 +292,8 @@
                                     </requireMavenVersion>
                                     <requireJavaVersion>
                                         <message>
-                                                                                        You are running an older version of Java. This application requires at least JDK ${java.version}.
-                                                                                </message>
+                                                                                                                                                                                You are running an older version of Java. This application requires at least JDK ${java.version}.
+                                                                                                                                                                </message>
                                         <version>[${java.version}.0,)</version>
                                     </requireJavaVersion>
                                 </rules>

@@ -69,8 +69,8 @@
         <!-- Dependency versions -->
         <byte-buddy.version>1.14.16</byte-buddy.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-io.version>2.20.0</commons-io.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <jakarta-servlet.version>6.0.0</jakarta-servlet.version>
         <jakarta-validation.version>3.0.2</jakarta-validation.version>
         <junit-jupiter.version>6.1.0</junit-jupiter.version>

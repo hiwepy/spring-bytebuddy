@@ -44,7 +44,6 @@
             </activation>
             <properties>
                 <!-- Dependency versions -->
-                <additionalparam>-Xdoclint:none</additionalparam>
                 <maven.test.skip>true</maven.test.skip>
             </properties>
         </profile>
